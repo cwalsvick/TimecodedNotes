@@ -7,13 +7,16 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model.Project;
+
 import java.util.ArrayList;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements NewProjectDialog.NewProjectCreatedListener {
 
     private ListView projectListView;
     private ArrayList<Project> projectList;
+    private ProjectListAdapter projectListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,8 @@ public class MainActivity extends ActionBarActivity {
 
         projectListView = (ListView) findViewById(R.id.project_listView);
         projectList = new ArrayList<>();
+        projectListAdapter = new ProjectListAdapter(this, projectList);
+        projectListView.setAdapter(projectListAdapter);
     }
 
 
@@ -44,9 +49,16 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         if (id == R.id.new_project) {
-            Toast.makeText(this, "New Project pressed", Toast.LENGTH_SHORT).show();
+            NewProjectDialog dialog = new NewProjectDialog(this, this);
+            dialog.begin();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onProjectCreate(Project p) {
+        projectList.add(p);
+        projectListAdapter.notifyDataSetChanged();
     }
 }

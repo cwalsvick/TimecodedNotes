@@ -5,5 +5,18 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="new_project">New Project</string>
+    <string name="project_name_hint">New Project</string>
+    <string name="dialog_new_project_name_title">Project Name</string>
+    <string name="dialog_new_project_next">Next</string>
+    <string name="dialog_new_project_name_cancel">Cancel</string>
+    <string name="dialog_new_project_name_hint">New Project</string>
+    <string name="dialog_new_project_date_title">Project Data</string>
+    <string name="dialog_new_project_back">Back</string>
+    <string name="dialog_new_project_cameras_partial_title">Add cameras to: </string>
+    <string name="dialog_new_project_add_camera">Add Camera</string>
+    <string name="dialog_new_project_camera_input_title">New Camera Name</string>
+    <string name="dialog_new_project_done">Done</string>
+    <string name="dialog_new_project_add_info_title">Additional Information</string>
+    <string name="dialog_new_project_add_info_hint">Add any additional information\nfor your project here.</string>
 
 </resources>
