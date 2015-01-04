@@ -1,11 +1,14 @@
 package com.walsvick.christopher.timecodenotes;
 
+import android.content.Intent;
+import android.os.Parcel;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model.Project;
 
@@ -18,6 +21,8 @@ public class MainActivity extends ActionBarActivity implements NewProjectDialog.
     private ArrayList<Project> projectList;
     private ProjectListAdapter projectListAdapter;
 
+    public final static String SELECTED_PROJECT = "COM.WALSVICK.CHRISTOPHER.TIMECODENOTES.SELECTED_PROJECT";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +32,20 @@ public class MainActivity extends ActionBarActivity implements NewProjectDialog.
         projectList = new ArrayList<>();
         projectListAdapter = new ProjectListAdapter(this, projectList);
         projectListView.setAdapter(projectListAdapter);
+
+        setListViewClickListener();
+    }
+
+    private void setListViewClickListener() {
+        projectListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(MainActivity.this, TakeNotesActivity.class);
+                Parcel parcel = Parcel.obtain();
+                i.putExtra(SELECTED_PROJECT, projectList.get(position));
+                startActivity(i);
+            }
+        });
     }
 
 

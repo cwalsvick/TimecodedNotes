@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model.Project;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,17 +48,21 @@ public class ProjectListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
 
-        Project currentProject = (Project) getItem(position);
+        Project project = (Project) getItem(position);
 
         if (row == null) {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(R.layout.list_view_item_project, parent, false);
          }
 
-        row.setTag(currentProject);
-        final TextView textView = (TextView) row.findViewById(R.id.list_view_item_project_name);
+        row.setTag(project);
+        final TextView projectName = (TextView) row.findViewById(R.id.list_view_item_project_name);
+        final TextView projectStartDate = (TextView) row.findViewById(R.id.list_view_item_project_date);
+        final TextView projectCameras = (TextView) row.findViewById(R.id.list_view_item_project_camera_list);
 
-        textView.setText(currentProject.getName());
+        projectName.setText(project.getName());
+        projectStartDate.setText(project.getStartDate().toString());
+        projectCameras.setText(StringUtils.join(project.getCameraListNames(), ", "));
 
         return row;
     }

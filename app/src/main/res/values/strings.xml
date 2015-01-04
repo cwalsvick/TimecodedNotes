@@ -18,5 +18,8 @@
     <string name="dialog_new_project_done">Done</string>
     <string name="dialog_new_project_add_info_title">Additional Information</string>
     <string name="dialog_new_project_add_info_hint">Add any additional information\nfor your project here.</string>
+    <string name="list_view_project_cameras_label">Cameras: </string>
+    <string name="dialog_new_note_create">Create</string>
+    <string name="dialog_new_note_cancel">Cancel</string>
 
 </resources>

@@ -217,8 +217,8 @@ public class NewProjectDialog implements DatePickerDialog.OnDateSetListener {
 
         final EditText editText = new EditText(context);
         editText.setHint(context.getResources().getString(R.string.dialog_new_project_add_info_hint));
+        editText.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         editText.setSingleLine(false);
-        editText.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
