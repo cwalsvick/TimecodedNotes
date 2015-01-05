@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model.Note;
-
-import org.apache.commons.lang3.StringUtils;
+import com.walsvick.christopher.timecodenotes.model.Note;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -10,8 +10,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model.Project;
+import com.walsvick.christopher.timecodenotes.IO.StorageUtil;
+import com.walsvick.christopher.timecodenotes.model.Project;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -32,8 +34,21 @@ public class MainActivity extends ActionBarActivity implements NewProjectDialog.
         projectList = new ArrayList<>();
         projectListAdapter = new ProjectListAdapter(this, projectList);
         projectListView.setAdapter(projectListAdapter);
-
         setListViewClickListener();
+
+        getSavedProjects();
+    }
+
+    private void getSavedProjects() {
+        StorageUtil storage = new StorageUtil();
+
+        File[] savedProjects = storage.getSavedProjects();
+        if (savedProjects != null) {
+            for (File f : savedProjects) {
+                projectList.add(storage.readProject(f));
+            }
+            projectListAdapter.notifyDataSetChanged();
+        }
     }
 
     private void setListViewClickListener() {

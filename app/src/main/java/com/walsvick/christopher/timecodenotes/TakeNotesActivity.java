@@ -5,13 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,11 +18,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model.Note;
-import com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model.Project;
+import com.walsvick.christopher.timecodenotes.IO.StorageUtil;
+import com.walsvick.christopher.timecodenotes.model.Note;
+import com.walsvick.christopher.timecodenotes.model.Project;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalTime;
 
 
@@ -60,6 +60,18 @@ public class TakeNotesActivity extends ActionBarActivity {
 
         cameraSpinner = (Spinner) findViewById(R.id.take_notes_camera_spinner);
         initCameraSpinner();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("TAKE_NOTES_ACTIVITY", "onPause");
+        StorageUtil store = new StorageUtil();
+        String rtn = store.saveProject(project);
+        if (rtn != null) {
+            Toast.makeText(this, rtn, Toast.LENGTH_SHORT).show();
+        }
+
+        super.onPause();
     }
 
     private void initCameraSpinner() {

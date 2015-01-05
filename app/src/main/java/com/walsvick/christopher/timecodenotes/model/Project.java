@@ -1,4 +1,4 @@
-package com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model;
+package com.walsvick.christopher.timecodenotes.model;
 
 /**
  * Created by Christopher on 12/13/2014.

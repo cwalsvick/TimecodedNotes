@@ -1,4 +1,4 @@
-package com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model;
+package com.walsvick.christopher.timecodenotes.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

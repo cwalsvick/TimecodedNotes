@@ -12,8 +12,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model.Camera;
-import com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model.Project;
+import com.walsvick.christopher.timecodenotes.model.Camera;
+import com.walsvick.christopher.timecodenotes.model.Project;
 
 import org.joda.time.LocalDate;
 

@@ -1,4 +1,4 @@
-package com.walsvick.christopher.timecodenotes.com.walsvick.christopher.timecodenodes.model;
+package com.walsvick.christopher.timecodenotes.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -47,6 +47,7 @@ public class Note implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(timeCode.toString());
         dest.writeString(note.toString());
+        dest.writeParcelable(camera, 0);
     }
 
     public static final Parcelable.Creator<Note> CREATOR
@@ -63,5 +64,6 @@ public class Note implements Parcelable {
     private Note(Parcel in) {
         timeCode = new LocalTime(in.readString());
         note = in.readString();
+        camera = in.readParcelable(Camera.class.getClassLoader());
     }
 }
