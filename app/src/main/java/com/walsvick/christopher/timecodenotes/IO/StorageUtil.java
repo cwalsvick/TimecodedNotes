@@ -1,56 +1,79 @@
-package com.walsvick.christopher.timecodenotes.IO;
+package com.walsvick.christopher.timecodenotes.io;
 
-import android.os.AsyncTask;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.walsvick.christopher.timecodenotes.db.NoteDAO;
+import com.walsvick.christopher.timecodenotes.model.Note;
 import com.walsvick.christopher.timecodenotes.model.Project;
-
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.util.ArrayList;
 
 /**
- * Created by Christopher on 1/4/2015.
+ * Created on 1/4/2015 by Christopher.
  */
 public class StorageUtil {
 
     public static String APP_DIRECTORY = "/TimeCodeNotes";
-    public static String FILE_SUFFIX = ".txt";
     public static String LOG_TAG = "STORAGE_SAVE_PROJECT";
 
-    public String saveProject(Project p) {
+    public static String exportToTSV(final Context context, Project project) {
         if (!isExternalStorageWritable()) {
-            return new String("Cannot write to external storage");
+            createErrorDialog(context, "External storage is unavailable.");
+            return null;
         }
 
+        NoteDAO dao = new NoteDAO(context);
+        ArrayList<Note> notes = dao.getAllNotes(project);
+
         File root = Environment.getExternalStorageDirectory();
-        Log.d(LOG_TAG, "root dir: " + root.getAbsolutePath());
         File appDir = new File(root.getAbsolutePath() + APP_DIRECTORY);
-        Log.d(LOG_TAG, "appDir: " + appDir.getAbsolutePath());
 
         appDir.mkdirs();
         if (!appDir.isDirectory()) {
-            return new String("Cannot create app directory");
+            createErrorDialog(context, "Problem creating application directory.");
+            return null;
         }
 
-        File outputFile = new File(appDir, getFileName(p));
-        BufferedOutputStream stream = null;
+        File outputFile;
+        outputFile = new File(appDir, generateFileName(project));
+        BufferedOutputStream stream;
         try {
             stream = new BufferedOutputStream(new FileOutputStream(outputFile));
-            stream.write(getJsonString(p).getBytes());
+            stream.write("Date\tTime\tCamera\tNote\n".getBytes());
+            for (Note n : notes) {
+                stream.write(n.getLocalDateTimeCode().toLocalDate().toString("yyyy-MM-dd").getBytes());
+                stream.write("\t".getBytes());
+                stream.write(n.getLocalDateTimeCode().toLocalTime().toString("HH:mm:ss").getBytes());
+                stream.write("\t".getBytes());
+                stream.write(n.getCamera().getBytes());
+                stream.write("\t".getBytes());
+                stream.write(n.getNote().getBytes());
+                stream.write("\n".getBytes());
+            }
             stream.flush();
             stream.close();
+
+            MediaScannerConnection.scanFile(context,
+                    new String[] { outputFile.toString() }, null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.i("ExternalStorage", "Scanned " + path + ":");
+                            Log.i("ExternalStorage", "-> uri=" + uri);
+                        }
+                    });
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -60,66 +83,43 @@ public class StorageUtil {
             e.printStackTrace();
             Log.d(LOG_TAG, "IOException");
         }
-        finally {
-        }
 
-        return null;
+        return outputFile.getAbsolutePath();
+
+
     }
 
-    public File[] getSavedProjects() {
-        File root = Environment.getExternalStorageDirectory();
-        File appDir = new File(root.getAbsolutePath() + APP_DIRECTORY);
+    private static void createErrorDialog(Context context, String s) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        if (appDir.isDirectory()) {
-            return appDir.listFiles();
-        }
-        return null;
+        final TextView textView = new TextView(context);
+        textView.setPadding(16, 16, 16, 16);
+        textView.setTextSize(16);
+        textView.setText(s);
+        textView.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        builder.setView(textView);
+
+        builder.setTitle("Error");
+        builder.setNeutralButton("Close",
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
-    public String getFileName(Project p) {
-        return new String(p.getName() + "_" + p.getStartDate().toString("yyyy-MM-dd"));
+    public static String generateFileName(Project p) {
+        return p.getName() + "_" + p.getStartDate().toString("yyyy-MM-dd") + ".tsv";
     }
 
-    /* Checks if external storage is available for read and write */
-    private boolean isExternalStorageWritable() {
+   // Checks if external storage is available for read and write
+    private static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-    /* Checks if external storage is available to at least read */
-    private boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-    private Gson getGson() {
-        GsonBuilder builder = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
-                .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
-                .serializeNulls();
-        return builder.create();
-    }
-
-    private String getJsonString(Project p) {
-        Gson gson = getGson();
-        return gson.toJson(p);
-    }
-
-    public Project readProject(File f) {
-        try {
-            Reader r = new InputStreamReader(new FileInputStream(f));
-            Gson gson = getGson();
-            return gson.fromJson(r, Project.class);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 }

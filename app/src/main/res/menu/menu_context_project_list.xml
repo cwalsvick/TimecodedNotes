@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <item android:id="@+id/menu_item_view_project_info" android:title="View Additional Info" />
+    <item android:id="@+id/menu_item_export_project" android:title="Export Project to TSV" />
+    <item android:id="@+id/menu_item_email_project" android:title="Email Project" />
+    <item android:id="@+id/menu_item_edit_project" android:title="Edit Project" />
+    <item android:id="@+id/menu_item_clone_project" android:title="Clone Project Settings" />
+    <item android:id="@+id/menu_item_delete_project" android:title="Delete Project" />
 </menu>
