@@ -12,7 +12,7 @@
     <string name="dialog_new_project_name_hint">New Project</string>
     <string name="dialog_new_project_date_title">Project Data</string>
     <string name="dialog_new_project_back">Back</string>
-    <string name="dialog_new_project_cameras_partial_title">Add cameras to: </string>
+    <string name="dialog_new_project_cameras_partial_title">Add cameras to </string>
     <string name="dialog_new_project_add_camera">Add Camera</string>
     <string name="dialog_new_project_camera_input_title">New Camera Name</string>
     <string name="dialog_new_project_done">Done</string>

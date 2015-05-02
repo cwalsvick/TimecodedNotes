@@ -3,19 +3,28 @@ package com.walsvick.christopher.timecodenotes.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
 /**
- * Created by Christopher on 1/3/2015.
+ * Created on 1/3/2015 by Christopher.
  */
 public class Note implements Parcelable {
 
-    private LocalTime timeCode;
+    private int id;
+    private int projectId;
+    private LocalDateTime timeCode;
     private String note;
-    private Camera camera;
+    private String camera;
+    private int cameraId;
 
-    public Note(LocalTime timeCode) {
+    public Note() {
+        id = -1;
+    }
+
+    public Note(LocalDateTime timeCode) {
         this.timeCode = timeCode;
+        id = -1;
     }
 
     public void setNote(String note) {
@@ -26,16 +35,22 @@ public class Note implements Parcelable {
         return this.note;
     }
 
-    public void setCamera(Camera c) {
+    public void setCamera(String c) {
         this.camera = c;
     }
 
-    public Camera getCamera() {
+    public String getCamera() {
         return camera;
     }
 
     public LocalTime getTimeCode() {
-        return timeCode;
+        return timeCode.toLocalTime();
+    }
+
+    public LocalDateTime getLocalDateTimeCode() { return timeCode; }
+
+    public void setTimeCode(String s) {
+        timeCode = LocalDateTime.parse(s);
     }
 
     @Override
@@ -45,9 +60,11 @@ public class Note implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(timeCode.toString());
-        dest.writeString(note.toString());
-        dest.writeParcelable(camera, 0);
+        dest.writeString(note);
+        dest.writeString(camera);
+        dest.writeInt(cameraId);
     }
 
     public static final Parcelable.Creator<Note> CREATOR
@@ -62,8 +79,26 @@ public class Note implements Parcelable {
     };
 
     private Note(Parcel in) {
-        timeCode = new LocalTime(in.readString());
+        id = in.readInt();
+        timeCode = new LocalDateTime(in.readString());
         note = in.readString();
-        camera = in.readParcelable(Camera.class.getClassLoader());
+        camera = in.readString();
+        cameraId = in.readInt();
+    }
+
+    public void setProjectId(int id) {
+        this.projectId = id;
+    }
+
+    public int getProjectId() {
+        return projectId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 }

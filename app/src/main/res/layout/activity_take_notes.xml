@@ -6,17 +6,30 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     tools:context=".TakeNotes">
-    
-    <LinearLayout
+
+    <TextView
+        android:id="@+id/take_notes_time_code_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dip" android:layout_weight="1"
+        android:textSize="24sp"
+        android:gravity="center"/>
+
+    <ListView
         android:layout_width="fill_parent"
-        android:layout_height="62dp">
-        <TextView
-            android:id="@+id/take_notes_time_code_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:text="HH:MM:SS"
-            android:textSize="24dp"
-            android:gravity="left|center_vertical"/>
+        android:layout_height="0dip" android:layout_weight="8"
+        android:id="@+id/take_notes_list_view"/>
+
+    <LinearLayout
+        android:id="@+id/activity_take_notes_bottom_container"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip" android:layout_weight="1.5"
+        android:layout_gravity="bottom">
+
+        <Spinner
+            android:id="@+id/take_notes_camera_spinner"
+            android:layout_width="0dip" android:layout_weight="3"
+            android:layout_height="fill_parent">
+        </Spinner>
 
         <Button
             android:id="@+id/take_notes_add_note_button"
@@ -24,22 +37,7 @@
             android:layout_height="fill_parent"
             android:layout_margin="4dp"
             android:text="Add Note"
-            android:textSize="14dp"
-            android:layout_gravity="right|center_vertical"/>
+            android:textSize="16dp"/>
 
-        <Spinner
-            android:id="@+id/take_notes_camera_spinner"
-            android:layout_width="0dip" android:layout_weight="3"
-            android:layout_height="fill_parent">
-
-            </Spinner>
-
-        </LinearLayout>
-
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/take_notes_list_view"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true" />
+    </LinearLayout>
 </LinearLayout>

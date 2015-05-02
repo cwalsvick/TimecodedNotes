@@ -1,58 +1,76 @@
-package com.walsvick.christopher.timecodenotes;
+package com.walsvick.christopher.timecodenotes.activity;
 
 import android.app.AlertDialog;
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.walsvick.christopher.timecodenotes.IO.StorageUtil;
+import com.walsvick.christopher.timecodenotes.R;
+import com.walsvick.christopher.timecodenotes.db.DBContentProvider;
+import com.walsvick.christopher.timecodenotes.db.NoteDAO;
+import com.walsvick.christopher.timecodenotes.db.NoteTable;
 import com.walsvick.christopher.timecodenotes.model.Note;
 import com.walsvick.christopher.timecodenotes.model.Project;
+import com.walsvick.christopher.timecodenotes.view.NoteListCursorAdapter;
 
-import org.joda.time.LocalTime;
+import org.joda.time.LocalDateTime;
 
 
-public class TakeNotesActivity extends ActionBarActivity {
+public class TakeNotesActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private Project project;
     private ListView noteListView;
-    private NoteListAdapter noteListAdapter;
-
-    private LocalTime timeCode;
+    private NoteListCursorAdapter noteListAdapter;
 
     private TextView timeCodeTextView;
     private Button addNoteButton;
     private Spinner cameraSpinner;
+    private LinearLayout bottomContainer;
+
+    private NoteDAO dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_notes);
 
+        dao = new NoteDAO(this);
+
         getSelectedProject();
         setTitle(project.getName());
 
         noteListView = (ListView) findViewById(R.id.take_notes_list_view);
-        noteListAdapter = new NoteListAdapter(this, project.getNoteList());
+        noteListAdapter = new NoteListCursorAdapter(this, null, 0);
         noteListView.setAdapter(noteListAdapter);
+        setListItemClickListener();
+        initViewItems();
 
-        timeCode = new LocalTime();
+        fillData();
+    }
+
+    private void initViewItems() {
         timeCodeTextView = (TextView) findViewById(R.id.take_notes_time_code_text_view);
+        timeCodeTextView.setText(LocalDateTime.now().toString("HH:mm:ss"));
         setUpTimeCodeRunnable();
 
         addNoteButton = (Button) findViewById(R.id.take_notes_add_note_button);
@@ -60,23 +78,27 @@ public class TakeNotesActivity extends ActionBarActivity {
 
         cameraSpinner = (Spinner) findViewById(R.id.take_notes_camera_spinner);
         initCameraSpinner();
+
+        bottomContainer = (LinearLayout) findViewById(R.id.activity_take_notes_bottom_container);
     }
 
-    @Override
-    protected void onPause() {
-        Log.d("TAKE_NOTES_ACTIVITY", "onPause");
-        StorageUtil store = new StorageUtil();
-        String rtn = store.saveProject(project);
-        if (rtn != null) {
-            Toast.makeText(this, rtn, Toast.LENGTH_SHORT).show();
-        }
+    private void setListItemClickListener() {
+        noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                launchNewNoteDialog(dao.cursorToNote((Cursor) noteListView.getItemAtPosition(position)), position);
+            }
+        });
+    }
 
-        super.onPause();
+    private void fillData() {
+        getLoaderManager().restartLoader(0, null, this);
+        this.noteListView.setAdapter(this.noteListAdapter);
     }
 
     private void initCameraSpinner() {
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, project.getCameraListNames());
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, project.getCameras());
 
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         cameraSpinner.setAdapter(dataAdapter);
@@ -86,14 +108,14 @@ public class TakeNotesActivity extends ActionBarActivity {
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Note note = new Note(timeCode.now());
-                note.setCamera(project.getCameraList().get(cameraSpinner.getSelectedItemPosition()));
-                launchNewNoteDialog(note);
+                Note note = new Note(LocalDateTime.now());
+                note.setCamera(project.getCameras().get(cameraSpinner.getSelectedItemPosition()));
+                launchNewNoteDialog(note, -1);
             }
         });
     }
 
-    private void launchNewNoteDialog(final Note note) {
+    private void launchNewNoteDialog(final Note note, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         final EditText editText = new EditText(this);
@@ -115,7 +137,7 @@ public class TakeNotesActivity extends ActionBarActivity {
         editText.requestFocus();
         builder.setView(editText);
 
-        builder.setTitle("Camera " + note.getCamera().getName()
+        builder.setTitle("Camera " + note.getCamera()
                 + " - " + note.getTimeCode().toString("HH:mm:ss"));
         builder.setPositiveButton(getResources().getString(R.string.dialog_new_note_create),
                 new DialogInterface.OnClickListener() {
@@ -123,8 +145,18 @@ public class TakeNotesActivity extends ActionBarActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         note.setNote(editText.getText().toString());
-                        project.addNote(note);
-                        noteListAdapter.notifyDataSetChanged();
+                        if (position < 1) {
+                            note.setId(dao.saveNote(project, note));
+                        }
+                        else {
+                            dao.updateNote(project, note);
+                        }
+
+                        fillData();
+
+                        dialog.cancel();
+                        bottomContainer.setVisibility(View.VISIBLE);
+
                     }
                 });
         builder.setNegativeButton(getResources().getString(R.string.dialog_new_note_cancel),
@@ -135,6 +167,8 @@ public class TakeNotesActivity extends ActionBarActivity {
                         dialog.cancel();
                     }
                 });
+
+        bottomContainer.setVisibility(View.GONE);
 
         AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
@@ -152,11 +186,12 @@ public class TakeNotesActivity extends ActionBarActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                timeCodeTextView.setText(timeCode.now().toString("HH:mm:ss"));
+                                timeCodeTextView.setText(LocalDateTime.now().toString("HH:mm:ss"));
                             }
                         });
                     }
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         };
@@ -190,5 +225,22 @@ public class TakeNotesActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] projection = NoteTable.ALL_COLUMNS;
+        Uri uri = Uri.parse(DBContentProvider.NOTE_CONTENT_URI + "/project/" + project.getId());
+        return new CursorLoader(this, uri, projection, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        noteListAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        noteListAdapter.swapCursor(null);
     }
 }

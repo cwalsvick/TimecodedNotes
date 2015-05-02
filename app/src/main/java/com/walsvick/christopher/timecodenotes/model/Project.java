@@ -1,29 +1,51 @@
 package com.walsvick.christopher.timecodenotes.model;
 
 /**
- * Created by Christopher on 12/13/2014.
+ * Created on 12/13/2014 by Christopher.
  */
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Project implements Parcelable {
 
+    private int id;
     private String name;
     private LocalDate startDate;
-    private ArrayList<Camera> cameraList;
+    private ArrayList<String> cameras;
     private String addInfo;
     private ArrayList<Note> notes;
 
     public Project() {
-        name = new String();
+        id = -1;
+        name = "";
         startDate = LocalDate.now();
-        cameraList = new ArrayList<Camera>();
-        addInfo = new String();
-        notes = new ArrayList<Note>();
+        cameras = new ArrayList<>();
+        addInfo = "";
+        notes = new ArrayList<>();
+    }
+
+    public Project(Project p) {
+        id = -1;
+        name = p.getName();
+        startDate = p.getStartDate();
+        cameras = new ArrayList<>(p.getCameras());
+        addInfo = p.getAddInfo();
+        notes = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -42,43 +64,24 @@ public class Project implements Parcelable {
         return startDate;
     }
 
-    public void setCameraList(ArrayList<Camera> cameraList) {
-        this.cameraList = cameraList;
+    public ArrayList<String> getCameras() {
+        return cameras;
     }
 
-    public ArrayList<Camera> getCameraList() {
-        return cameraList;
+    public void setCameras(List<String> list) {
+        this.cameras = new ArrayList<>(list);
     }
 
-    public ArrayList<Note> getNoteList() { return notes; }
-
-    public void addNote(Note note) {
-        if (notes == null) {
-            notes = new ArrayList<Note>();
-        }
-        notes.add(note);
-    }
-
-    public ArrayList<String> getCameraListNames() {
-        ArrayList<String> rtn = new ArrayList<>();
-
-        for (Camera c : cameraList) {
-            rtn.add(c.getName());
-        }
-
-        return rtn;
-    }
-
-    public int getNumCameras() {
-        return cameraList.size();
-    }
-
-    public void addCamera(Camera c) {
-        cameraList.add(c);
+    public void addCamera(String c) {
+        cameras.add(c);
     }
 
     public void setAddInfo(String info) {
         this.addInfo = info;
+    }
+
+    public String getAddInfo() {
+        return this.addInfo;
     }
 
     @Override
@@ -88,9 +91,10 @@ public class Project implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(name);
         dest.writeString(startDate.toString());
-        dest.writeList(cameraList);
+        dest.writeString(StringUtils.join(cameras, ';'));
         dest.writeString(addInfo);
         dest.writeList(notes);
     }
@@ -107,12 +111,12 @@ public class Project implements Parcelable {
     };
 
     public Project(Parcel in) {
+        id = in.readInt();
         name = in.readString();
         startDate = new LocalDate(in.readString());
-        cameraList = new ArrayList<Camera>();
-        in.readList(cameraList, Camera.class.getClassLoader());
+        cameras = new ArrayList<>(Arrays.asList(StringUtils.split(in.readString(), ';')));
         addInfo = in.readString();
-        notes = new ArrayList<Note>();
+        notes = new ArrayList<>();
         in.readList(notes, Note.class.getClassLoader());
     }
 }
