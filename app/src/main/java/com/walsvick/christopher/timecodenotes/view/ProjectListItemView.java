@@ -14,33 +14,25 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Created on 1/18/2015 by Christopher.
  */
-public class ProjectListItemView extends LinearLayout {
+public class ProjectListItemView {
 
-    private Project project;
+    private View view;
 
     private TextView projectName;
     private TextView projectStartDate;
     private TextView projectCameras;
 
-    public ProjectListItemView(Context context, Project project) {
-        super(context);
-
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.list_view_item_project, this, true);
-
+    public ProjectListItemView(View v) {
+        this.view = v;
         this.projectName = (TextView) v.findViewById(R.id.list_view_item_project_name);
         this.projectStartDate = (TextView) v.findViewById(R.id.list_view_item_project_date);
         this.projectCameras = (TextView) v.findViewById(R.id.list_view_item_project_camera_list);
-
-        setProject(project);
     }
 
     public void setProject(Project project) {
-        this.project = project;
-
-        projectName.setText(project.getName());
-        projectStartDate.setText(project.getStartDate().toString());
-        projectCameras.setText(StringUtils.join(project.getCameras(), ", "));
+        this.projectName.setText(project.getName());
+        this.projectStartDate.setText(project.getStartDate().toString());
+        this.projectCameras.setText(StringUtils.join(project.getCameras(), ", "));
     }
 
 

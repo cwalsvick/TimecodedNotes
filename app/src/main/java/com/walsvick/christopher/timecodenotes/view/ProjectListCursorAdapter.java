@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Created on 1/10/2015 by Christopher.
  */
-public class ProjectListCursorAdapter extends CursorAdapter {
+/*public class ProjectListCursorAdapter extends CursorAdapter {
     public ProjectListCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
@@ -41,3 +41,4 @@ public class ProjectListCursorAdapter extends CursorAdapter {
         view.setProject(project);
     }
 }
+*/

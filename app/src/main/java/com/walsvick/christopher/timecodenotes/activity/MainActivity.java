@@ -10,6 +10,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -28,8 +30,10 @@ import com.walsvick.christopher.timecodenotes.db.ProjectDAO;
 import com.walsvick.christopher.timecodenotes.db.ProjectTable;
 import com.walsvick.christopher.timecodenotes.io.StorageUtil;
 import com.walsvick.christopher.timecodenotes.model.Project;
+import com.walsvick.christopher.timecodenotes.view.FloatingActionButton;
 import com.walsvick.christopher.timecodenotes.view.NewProjectDialog;
-import com.walsvick.christopher.timecodenotes.view.ProjectListCursorAdapter;
+import com.walsvick.christopher.timecodenotes.view.RecyclerItemClickListener;
+import com.walsvick.christopher.timecodenotes.view.RecyclerViewCursorAdapter;
 
 public class MainActivity extends ActionBarActivity implements
         NewProjectDialog.NewProjectDialogListener,
@@ -37,8 +41,10 @@ public class MainActivity extends ActionBarActivity implements
 
     private ProjectDAO projectDAO;
 
-    private ListView projectListView;
-    private ProjectListCursorAdapter projectListAdapter;
+    private RecyclerView projectListView;
+    private RecyclerViewCursorAdapter projectListAdapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private FloatingActionButton newProjectButton;
 
     public final static String SELECTED_PROJECT = "COM.WALSVICK.CHRISTOPHER.TIMECODENOTES.SELECTED_PROJECT";
 
@@ -46,15 +52,38 @@ public class MainActivity extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         projectDAO = new ProjectDAO(this);
 
-        projectListView = (ListView) findViewById(R.id.project_listView);
-        projectListAdapter = new ProjectListCursorAdapter(this, null, 0);
+        newProjectButton = (FloatingActionButton) findViewById(R.id.new_project_fab);
+        newProjectButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                NewProjectDialog dialog = new NewProjectDialog(MainActivity.this, MainActivity.this);
+                dialog.begin();
+            }
+        });
+
+        projectListView = (RecyclerView) findViewById(R.id.project_recycler_view);
+        projectListView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(this);
+        projectListView.setLayoutManager(layoutManager);
+
+        projectListAdapter = new RecyclerViewCursorAdapter(this, null);
         projectListView.setAdapter(projectListAdapter);
+        projectListView.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Intent i = new Intent(MainActivity.this, TakeNotesActivity.class);
+                i.putExtra(SELECTED_PROJECT, (Project) projectListAdapter.getItem(position));
+                startActivity(i);
+            }
+        }));
+
+
         setListViewClickListener();
         registerForContextMenu(projectListView);
-
         fillData();
     }
 
@@ -93,7 +122,7 @@ public class MainActivity extends ActionBarActivity implements
     public boolean onContextItemSelected(MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 
-        Project project = projectDAO.cursorToProject((Cursor) projectListView.getItemAtPosition(info.position));
+        Project project = (Project) projectListAdapter.getItem(info.position);
 
         switch (item.getItemId()) {
             case R.id.menu_item_view_project_info:
@@ -128,7 +157,7 @@ public class MainActivity extends ActionBarActivity implements
 
         String fileName = StorageUtil.exportToTSV(this, project);
         Log.d(getClass().getSimpleName(), "fileUri=" + Uri.parse("file://" + fileName));
-        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ fileName));
+        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + fileName));
         startActivity(Intent.createChooser(emailIntent, "Send mail..."));
     }
 
@@ -188,7 +217,7 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void setListViewClickListener() {
-        projectListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*projectListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(MainActivity.this, TakeNotesActivity.class);
@@ -196,7 +225,7 @@ public class MainActivity extends ActionBarActivity implements
                         projectDAO.cursorToProject((Cursor) projectListView.getItemAtPosition(position)));
                 startActivity(i);
             }
-        });
+        });*/
     }
 
     @Override

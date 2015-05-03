@@ -28,7 +28,7 @@ public class ProjectDAO {
         this.context = context;
     }
 
-    public Project cursorToProject(Cursor cursor) {
+    public static Project cursorToProject(Cursor cursor) {
         Project p = new Project();
 
         p.setId(cursor.getInt(cursor.getColumnIndex(ProjectTable.PROJECT_ID)));
