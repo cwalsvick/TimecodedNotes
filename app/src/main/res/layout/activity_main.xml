@@ -8,7 +8,7 @@
         android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/grey_200"/>
+        android:layout_marginTop="8dp"/>
 
     <com.walsvick.christopher.timecodenotes.view.FloatingActionButton
         android:id="@+id/new_project_fab"
