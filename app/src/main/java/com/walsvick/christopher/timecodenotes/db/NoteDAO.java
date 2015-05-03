@@ -60,7 +60,7 @@ public class NoteDAO {
         return notes;
     }
 
-    public Note cursorToNote(Cursor cursor) {
+    public static Note cursorToNote(Cursor cursor) {
         Note n = new Note();
 
         n.setId(cursor.getInt(cursor.getColumnIndex(NoteTable.NOTE_ID)));

@@ -1,43 +1,66 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     tools:context=".TakeNotes">
 
-    <TextView
-        android:id="@+id/take_notes_time_code_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dip" android:layout_weight="1"
-        android:textSize="24sp"
-        android:gravity="center"/>
-
-    <ListView
-        android:layout_width="fill_parent"
-        android:layout_height="0dip" android:layout_weight="8"
-        android:id="@+id/take_notes_list_view"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/note_recycler_view"
+        android:scrollbars="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="8dp"
+        android:background="@color/grey_200"/>
 
     <LinearLayout
         android:id="@+id/activity_take_notes_bottom_container"
         android:layout_width="fill_parent"
-        android:layout_height="0dip" android:layout_weight="1.5"
-        android:layout_gravity="bottom">
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/primary">
 
-        <Spinner
-            android:id="@+id/take_notes_camera_spinner"
-            android:layout_width="0dip" android:layout_weight="3"
-            android:layout_height="fill_parent">
-        </Spinner>
+        <ImageButton
+            android:id="@+id/edit_time_stamp_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@null"
+            android:src="@drawable/edit_icon"/>
 
-        <Button
-            android:id="@+id/take_notes_add_note_button"
-            android:layout_width="0dip" android:layout_weight="3"
-            android:layout_height="fill_parent"
-            android:layout_margin="4dp"
-            android:text="Add Note"
-            android:textSize="16dp"/>
-
+        <TextView
+            android:id="@+id/take_notes_time_code_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textColor="@color/primary_text"/>
     </LinearLayout>
-</LinearLayout>
+
+    <com.walsvick.christopher.timecodenotes.view.FloatingActionButton
+        android:id="@+id/take_notes_add_note_button"
+        android:layout_width="@dimen/fab_size"
+        android:layout_height="@dimen/fab_size"
+        android:layout_marginBottom="28dp"
+        android:layout_marginRight="28dp"
+        android:layout_marginEnd="28dp"
+        android:elevation="@dimen/fab_elevation"
+        android:background="@color/accent"
+        android:stateListAnimator="@animator/fab_anim"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true">
+
+        <ImageView
+            android:layout_width="@dimen/fab_icon_size"
+            android:layout_height="@dimen/fab_icon_size"
+            android:src="@drawable/fab_icons"
+            android:layout_gravity="center"
+            android:duplicateParentState="true"/>
+
+    </com.walsvick.christopher.timecodenotes.view.FloatingActionButton>
+</RelativeLayout>

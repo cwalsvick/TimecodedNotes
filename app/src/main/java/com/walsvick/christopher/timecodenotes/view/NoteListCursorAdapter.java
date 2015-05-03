@@ -12,7 +12,7 @@ import com.walsvick.christopher.timecodenotes.model.Note;
 /**
  * Created on 1/10/2015 by Christopher.
  */
-public class NoteListCursorAdapter extends CursorAdapter {
+/*public class NoteListCursorAdapter extends CursorAdapter {
 
     public NoteListCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -34,4 +34,4 @@ public class NoteListCursorAdapter extends CursorAdapter {
         NoteListItemView view = (NoteListItemView) oldView;
         view.setNote(note);
     }
-}
+}*/

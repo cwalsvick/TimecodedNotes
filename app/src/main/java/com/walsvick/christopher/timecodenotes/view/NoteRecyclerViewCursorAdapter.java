@@ -6,18 +6,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.walsvick.christopher.timecodenotes.R;
-import com.walsvick.christopher.timecodenotes.db.ProjectDAO;
-import com.walsvick.christopher.timecodenotes.model.Project;
-
-import org.apache.commons.lang3.StringUtils;
+import com.walsvick.christopher.timecodenotes.db.NoteDAO;
+import com.walsvick.christopher.timecodenotes.model.Note;
 
 /**
  * Created on 5/2/2015 by Christopher.
  */
-public class RecyclerViewCursorAdapter extends RecyclerView.Adapter<RecyclerViewCursorAdapter.ViewHolder> {
+public class NoteRecyclerViewCursorAdapter extends RecyclerView.Adapter<NoteRecyclerViewCursorAdapter.ViewHolder> {
 
     private Cursor dataCursor;
     private Context context;
@@ -27,15 +24,15 @@ public class RecyclerViewCursorAdapter extends RecyclerView.Adapter<RecyclerView
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public ProjectListItemView listItemView;
+        public NoteListItemView listItemView;
 
         public ViewHolder(View v) {
             super(v);
-            listItemView = new ProjectListItemView(v);
+            listItemView = new NoteListItemView(v);
         }
     }
 
-    public RecyclerViewCursorAdapter(Context context, Cursor cursor) {
+    public NoteRecyclerViewCursorAdapter(Context context, Cursor cursor) {
         this.context = context;
         this.dataCursor = cursor;
     }
@@ -43,12 +40,9 @@ public class RecyclerViewCursorAdapter extends RecyclerView.Adapter<RecyclerView
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_view_item_project, parent, false);
+                .inflate(R.layout.list_view_item_note, parent, false);
 
-       // ProjectListItemView item = new ProjectListItemView(context, itemView);
-
-        ViewHolder vh = new ViewHolder(itemView);
-        return vh;
+        return new ViewHolder(itemView);
     }
 
     @Override
@@ -56,9 +50,9 @@ public class RecyclerViewCursorAdapter extends RecyclerView.Adapter<RecyclerView
         if (!dataCursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        Project project = ProjectDAO.cursorToProject(dataCursor);
+        Note note = NoteDAO.cursorToNote(dataCursor);
 
-        viewHolder.listItemView.setProject(project);
+        viewHolder.listItemView.setNote(note);
     }
 
     @Override
@@ -89,6 +83,6 @@ public class RecyclerViewCursorAdapter extends RecyclerView.Adapter<RecyclerView
         if (!dataCursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        return ProjectDAO.cursorToProject(dataCursor);
+        return NoteDAO.cursorToNote(dataCursor);
     }
 }

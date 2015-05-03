@@ -13,15 +13,24 @@ import com.walsvick.christopher.timecodenotes.model.Note;
 /**
  * Created on 1/18/2015 by Christopher.
  */
-public class NoteListItemView extends LinearLayout {
+public class NoteListItemView {
 
     private Note note;
+    private View view;
 
     private TextView timeCode;
     private TextView noteText;
     private TextView cameraText;
 
-    public NoteListItemView(Context context, Note note) {
+
+    public NoteListItemView(View v) {
+        this.view = v;
+        timeCode = (TextView) view.findViewById(R.id.list_view_item_note_time_code);
+        noteText = (TextView) view.findViewById(R.id.list_view_item_note);
+        cameraText = (TextView) view.findViewById(R.id.list_view_item_note_camera);
+    }
+
+    /*public NoteListItemView(Context context, Note note) {
         super(context);
 
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
@@ -32,7 +41,7 @@ public class NoteListItemView extends LinearLayout {
         cameraText = (TextView) view.findViewById(R.id.list_view_item_note_camera);
 
         setNote(note);
-    }
+    }*/
 
     public void setNote(Note note) {
         this.note = note;

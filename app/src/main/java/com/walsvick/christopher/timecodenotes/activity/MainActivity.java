@@ -81,7 +81,6 @@ public class MainActivity extends ActionBarActivity implements
             }
         }));
 
-
         setListViewClickListener();
         registerForContextMenu(projectListView);
         fillData();
@@ -97,13 +96,13 @@ public class MainActivity extends ActionBarActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
+       /* if (id == R.id.action_settings) {
             return true;
         }
         if (id == R.id.new_project) {
             NewProjectDialog dialog = new NewProjectDialog(this, this);
             dialog.begin();
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
