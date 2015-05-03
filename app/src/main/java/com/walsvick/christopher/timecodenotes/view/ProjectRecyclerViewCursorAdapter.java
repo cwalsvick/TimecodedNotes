@@ -6,18 +6,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.walsvick.christopher.timecodenotes.R;
 import com.walsvick.christopher.timecodenotes.db.ProjectDAO;
 import com.walsvick.christopher.timecodenotes.model.Project;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Created on 5/2/2015 by Christopher.
  */
-public class RecyclerViewCursorAdapter extends RecyclerView.Adapter<RecyclerViewCursorAdapter.ViewHolder> {
+public class ProjectRecyclerViewCursorAdapter extends RecyclerView.Adapter<ProjectRecyclerViewCursorAdapter.ViewHolder> {
 
     private Cursor dataCursor;
     private Context context;
@@ -35,13 +32,14 @@ public class RecyclerViewCursorAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
-    public RecyclerViewCursorAdapter(Context context, Cursor cursor) {
+    public ProjectRecyclerViewCursorAdapter(Context context, Cursor cursor) {
         this.context = context;
         this.dataCursor = cursor;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+       // if (position == dataCursor.getCount() && get)
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_view_item_project, parent, false);
 

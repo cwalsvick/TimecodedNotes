@@ -30,23 +30,10 @@ public class NoteListItemView {
         cameraText = (TextView) view.findViewById(R.id.list_view_item_note_camera);
     }
 
-    /*public NoteListItemView(Context context, Note note) {
-        super(context);
-
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        View view = inflater.inflate(R.layout.list_view_item_note, this, true);
-
-        timeCode = (TextView) view.findViewById(R.id.list_view_item_note_time_code);
-        noteText = (TextView) view.findViewById(R.id.list_view_item_note);
-        cameraText = (TextView) view.findViewById(R.id.list_view_item_note_camera);
-
-        setNote(note);
-    }*/
-
     public void setNote(Note note) {
         this.note = note;
         timeCode.setText(note.getTimeCode().toString("HH:mm:ss"));
         noteText.setText(note.getNote());
-        cameraText.setText("- " + note.getCamera() + " -");
+        cameraText.setText(note.getCamera());
     }
 }

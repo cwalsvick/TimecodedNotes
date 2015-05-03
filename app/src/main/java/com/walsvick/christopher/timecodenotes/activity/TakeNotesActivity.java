@@ -125,7 +125,8 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
             @Override
             public void onClick(View v) {
                 Note note = new Note(LocalDateTime.now());
-             //   note.setCamera(project.getCameras().get(cameraSpinner.getSelectedItemPosition()));
+                note.setCamera("Camera");
+              //  note.setCamera(project.getCameras().get(cameraSpinner.getSelectedItemPosition()));
                 launchNewNoteDialog(note, -1);
             }
         });
@@ -166,12 +167,8 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
                         } else {
                             dao.updateNote(project, note);
                         }
-
                         fillData();
-
                         dialog.cancel();
-                        // bottomContainer.setVisibility(View.VISIBLE);
-
                     }
                 });
         builder.setNegativeButton(getResources().getString(R.string.dialog_new_note_cancel),
@@ -179,12 +176,9 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // bottomContainer.setVisibility(View.VISIBLE);
                         dialog.cancel();
                     }
                 });
-
-       // bottomContainer.setVisibility(View.GONE);
 
         AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);

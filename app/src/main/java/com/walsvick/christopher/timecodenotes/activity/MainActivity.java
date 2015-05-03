@@ -19,9 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.walsvick.christopher.timecodenotes.R;
@@ -33,7 +31,7 @@ import com.walsvick.christopher.timecodenotes.model.Project;
 import com.walsvick.christopher.timecodenotes.view.FloatingActionButton;
 import com.walsvick.christopher.timecodenotes.view.NewProjectDialog;
 import com.walsvick.christopher.timecodenotes.view.RecyclerItemClickListener;
-import com.walsvick.christopher.timecodenotes.view.RecyclerViewCursorAdapter;
+import com.walsvick.christopher.timecodenotes.view.ProjectRecyclerViewCursorAdapter;
 
 public class MainActivity extends ActionBarActivity implements
         NewProjectDialog.NewProjectDialogListener,
@@ -42,7 +40,7 @@ public class MainActivity extends ActionBarActivity implements
     private ProjectDAO projectDAO;
 
     private RecyclerView projectListView;
-    private RecyclerViewCursorAdapter projectListAdapter;
+    private ProjectRecyclerViewCursorAdapter projectListAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private FloatingActionButton newProjectButton;
 
@@ -70,7 +68,7 @@ public class MainActivity extends ActionBarActivity implements
         layoutManager = new LinearLayoutManager(this);
         projectListView.setLayoutManager(layoutManager);
 
-        projectListAdapter = new RecyclerViewCursorAdapter(this, null);
+        projectListAdapter = new ProjectRecyclerViewCursorAdapter(this, null);
         projectListView.setAdapter(projectListAdapter);
         projectListView.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
