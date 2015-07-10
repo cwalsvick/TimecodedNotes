@@ -1,30 +1,26 @@
 package com.walsvick.christopher.timecodenotes.activity;
 
-import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -35,7 +31,6 @@ import com.walsvick.christopher.timecodenotes.db.NoteTable;
 import com.walsvick.christopher.timecodenotes.model.Note;
 import com.walsvick.christopher.timecodenotes.model.Project;
 import com.walsvick.christopher.timecodenotes.view.FloatingActionButton;
-import com.walsvick.christopher.timecodenotes.view.NewProjectDialog;
 import com.walsvick.christopher.timecodenotes.view.NoteRecyclerViewCursorAdapter;
 
 import org.joda.time.LocalDateTime;
@@ -52,8 +47,14 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
     private TextView timeCodeTextView;
     private FloatingActionButton addNoteButton;
     private ImageButton editTimeStampButton;
-   /* private Spinner cameraSpinner;*/
     private LinearLayout bottomContainer;
+
+    // view items for new note cardview
+    private CardView newNoteItemView;
+    private TextView newNoteTimeStamp;
+    private EditText newNoteEditText;
+    private Spinner newNoteCameraSpinner;
+    private LocalDateTime timeOfNewNote;
 
     private NoteDAO dao;
 
@@ -69,14 +70,11 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
 
         noteListView = (RecyclerView) findViewById(R.id.note_recycler_view);
         noteListView.setHasFixedSize(true);
-
         layoutManager = new LinearLayoutManager(this);
         noteListView.setLayoutManager(layoutManager);
-
-        noteListAdapter = new NoteRecyclerViewCursorAdapter(this, null);
+        noteListAdapter = new NoteRecyclerViewCursorAdapter(this, null, project);
         noteListView.setAdapter(noteListAdapter);
 
-        // setListItemClickListener();
         initViewItems();
 
         fillData();
@@ -89,100 +87,77 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
 
         addNoteButton = (FloatingActionButton) findViewById(R.id.take_notes_add_note_button);
         createAddNoteButtonListener();
-
         editTimeStampButton = (ImageButton) findViewById(R.id.edit_time_stamp_button);
-
-      /*  cameraSpinner = (Spinner) findViewById(R.id.take_notes_camera_spinner);
-        initCameraSpinner();*/
-
         bottomContainer = (LinearLayout) findViewById(R.id.activity_take_notes_bottom_container);
-    }
 
-    /*private void setListItemClickListener() {
-        noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                launchNewNoteDialog(dao.cursorToNote((Cursor) noteListView.getItemAtPosition(position)), position);
-            }
-        });
-    }*/
+        newNoteItemView = (CardView) findViewById(R.id.new_note_item_view);
+        newNoteEditText = (EditText) findViewById(R.id.new_note_edit_text);
+        newNoteTimeStamp = (TextView) findViewById(R.id.new_note_time_code);
+        newNoteCameraSpinner = (Spinner) findViewById(R.id.new_note_camera_spinner);
+    }
 
     private void fillData() {
         getLoaderManager().restartLoader(0, null, this);
         this.noteListView.setAdapter(this.noteListAdapter);
     }
 
-   /* private void initCameraSpinner() {
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, project.getCameras());
-
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        cameraSpinner.setAdapter(dataAdapter);
-    }*/
-
     private void createAddNoteButtonListener() {
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Note note = new Note(LocalDateTime.now());
-                note.setCamera("Camera");
-              //  note.setCamera(project.getCameras().get(cameraSpinner.getSelectedItemPosition()));
-                launchNewNoteDialog(note, -1);
+                timeOfNewNote = LocalDateTime.now();
+                newNoteTimeStamp.setText(timeOfNewNote.toString("HH:mm:ss"));
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(v.getContext(),
+                        android.R.layout.simple_spinner_item, project.getCameras());
+
+                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                newNoteCameraSpinner.setAdapter(dataAdapter);
+                newNoteEditText.setText(null);
+                newNoteItemView.setVisibility(View.VISIBLE);
+
+                newNoteEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (hasFocus) {
+                            inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+                        } else {
+                            inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                        }
+                    }
+                });
+                newNoteEditText.setOnKeyListener(new EditText.OnKeyListener() {
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                        if ((event.getAction() == KeyEvent.ACTION_DOWN)
+                                && (keyCode == KeyEvent.KEYCODE_ENTER
+                                || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)) {
+                            createNewNote();
+                            newNoteItemView.setVisibility(View.GONE);
+                            fillData();
+                            newNoteEditText.clearFocus();
+                            return true;
+                        }
+                        else if ((event.getAction() == KeyEvent.ACTION_DOWN)
+                                && (keyCode == KeyEvent.KEYCODE_B)) {
+                            newNoteEditText.clearFocus();
+                            newNoteItemView.setVisibility(View.GONE);
+                        }
+                        return false;
+                    }
+                });
+                newNoteEditText.requestFocus();
             }
         });
     }
 
-    private void launchNewNoteDialog(final Note note, final int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        final EditText editText = new EditText(this);
-        editText.setText(note.getNote());
-        editText.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        editText.setSingleLine(false);
-        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                editText.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
-                    }
-                });
-            }
-        });
-        editText.requestFocus();
-        builder.setView(editText);
-
-        builder.setTitle("Camera " + note.getCamera()
-                + " - " + note.getTimeCode().toString("HH:mm:ss"));
-        builder.setPositiveButton(getResources().getString(R.string.dialog_new_note_create),
-                new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        note.setNote(editText.getText().toString());
-                        if (position < 1) {
-                            note.setId(dao.saveNote(project, note));
-                        } else {
-                            dao.updateNote(project, note);
-                        }
-                        fillData();
-                        dialog.cancel();
-                    }
-                });
-        builder.setNegativeButton(getResources().getString(R.string.dialog_new_note_cancel),
-                new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-        AlertDialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+    private void createNewNote() {
+        Note n = new Note();
+        n.setProjectId(project.getId());
+        n.setTimeCode(timeOfNewNote);
+        n.setNote(newNoteEditText.getText().toString());
+        n.setCamera(project.getCameras().get(newNoteCameraSpinner.getSelectedItemPosition()));
+        n.setProjectId(project.getId());
+        dao.saveNote(project, n);
     }
 
     private void setUpTimeCodeRunnable() {
@@ -213,7 +188,6 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         Intent i = getIntent();
         project = i.getParcelableExtra(MainActivity.SELECTED_PROJECT);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

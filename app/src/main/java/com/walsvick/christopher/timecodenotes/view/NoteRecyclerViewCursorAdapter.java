@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.walsvick.christopher.timecodenotes.R;
 import com.walsvick.christopher.timecodenotes.db.NoteDAO;
 import com.walsvick.christopher.timecodenotes.model.Note;
+import com.walsvick.christopher.timecodenotes.model.Project;
 
 /**
  * Created on 5/2/2015 by Christopher.
@@ -18,6 +19,7 @@ public class NoteRecyclerViewCursorAdapter extends RecyclerView.Adapter<NoteRecy
 
     private Cursor dataCursor;
     private Context context;
+    private Project project;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -32,9 +34,10 @@ public class NoteRecyclerViewCursorAdapter extends RecyclerView.Adapter<NoteRecy
         }
     }
 
-    public NoteRecyclerViewCursorAdapter(Context context, Cursor cursor) {
+    public NoteRecyclerViewCursorAdapter(Context context, Cursor cursor, Project p) {
         this.context = context;
         this.dataCursor = cursor;
+        this.project = p;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class NoteRecyclerViewCursorAdapter extends RecyclerView.Adapter<NoteRecy
         }
         Note note = NoteDAO.cursorToNote(dataCursor);
 
-        viewHolder.listItemView.setNote(note);
+        viewHolder.listItemView.setNote(note, project);
     }
 
     @Override

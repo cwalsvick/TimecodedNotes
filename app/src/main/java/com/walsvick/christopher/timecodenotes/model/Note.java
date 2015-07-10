@@ -49,6 +49,10 @@ public class Note implements Parcelable {
 
     public LocalDateTime getLocalDateTimeCode() { return timeCode; }
 
+    public void setTimeCode(LocalDateTime time) {
+        timeCode = time;
+    }
+
     public void setTimeCode(String s) {
         timeCode = LocalDateTime.parse(s);
     }

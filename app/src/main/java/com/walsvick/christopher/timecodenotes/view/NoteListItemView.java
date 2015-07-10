@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.walsvick.christopher.timecodenotes.R;
 import com.walsvick.christopher.timecodenotes.model.Note;
+import com.walsvick.christopher.timecodenotes.model.Project;
 
 /**
  * Created on 1/18/2015 by Christopher.
@@ -20,20 +23,24 @@ public class NoteListItemView {
 
     private TextView timeCode;
     private TextView noteText;
-    private TextView cameraText;
+    private Spinner cameraSpinner;
 
 
     public NoteListItemView(View v) {
         this.view = v;
         timeCode = (TextView) view.findViewById(R.id.list_view_item_note_time_code);
         noteText = (TextView) view.findViewById(R.id.list_view_item_note);
-        cameraText = (TextView) view.findViewById(R.id.list_view_item_note_camera);
+        cameraSpinner = (Spinner) view.findViewById(R.id.list_view_item_camera_spinner);
     }
 
-    public void setNote(Note note) {
+    public void setNote(Note note, Project project) {
         this.note = note;
         timeCode.setText(note.getTimeCode().toString("HH:mm:ss"));
         noteText.setText(note.getNote());
-        cameraText.setText(note.getCamera());
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(),
+                android.R.layout.simple_spinner_item, project.getCameras());
+
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        cameraSpinner.setAdapter(dataAdapter);
     }
 }
