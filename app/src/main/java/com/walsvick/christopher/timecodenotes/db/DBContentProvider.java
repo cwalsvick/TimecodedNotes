@@ -122,6 +122,7 @@ public class DBContentProvider extends ContentProvider {
             case NOTES_BY_PROJECT_ID:
                 queryBuilder.setTables(NoteTable.TABLE_NAME);
                 queryBuilder.appendWhere(NoteTable.NOTE_PROJECT_ID + "=" + uri.getLastPathSegment());
+                sortOrder = NoteTable.NOTE_ID + " DESC";
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
