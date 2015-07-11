@@ -36,6 +36,8 @@ import com.walsvick.christopher.timecodenotes.view.NoteRecyclerViewCursorAdapter
 
 import org.joda.time.LocalDateTime;
 
+import java.util.ArrayList;
+
 
 public class TakeNotesActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor>,NewNoteItemView.NewNoteOnBackPressedListener {
 
@@ -58,6 +60,7 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
     private LocalDateTime timeOfNewNote;
 
     private boolean mNewNoteOnBackPressed;
+    private String mLastCameraUsed;
 
     private NoteDAO dao;
 
@@ -111,8 +114,16 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
             public void onClick(View v) {
                 timeOfNewNote = LocalDateTime.now();
                 newNoteTimeStamp.setText(timeOfNewNote.toString("HH:mm:ss"));
+
+
+                ArrayList<String> cameras = project.getCameras();
+                if (mLastCameraUsed != null) {
+                    cameras.remove(mLastCameraUsed);
+                    cameras.add(0, mLastCameraUsed);
+                }
+
                 ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(v.getContext(),
-                        android.R.layout.simple_spinner_item, project.getCameras());
+                        android.R.layout.simple_spinner_item, cameras);
 
                 dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 newNoteCameraSpinner.setAdapter(dataAdapter);
@@ -156,7 +167,11 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         n.setNote(newNoteEditText.getText().toString());
         n.setCamera(project.getCameras().get(newNoteCameraSpinner.getSelectedItemPosition()));
         n.setProjectId(project.getId());
-        dao.saveNote(project, n);
+
+        int noteId = dao.saveNote(project, n);
+        n.setId(noteId);
+
+        mLastCameraUsed = n.getCamera();
     }
 
     private void setUpTimeCodeRunnable() {
