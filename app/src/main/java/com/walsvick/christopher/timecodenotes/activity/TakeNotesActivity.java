@@ -31,12 +31,13 @@ import com.walsvick.christopher.timecodenotes.db.NoteTable;
 import com.walsvick.christopher.timecodenotes.model.Note;
 import com.walsvick.christopher.timecodenotes.model.Project;
 import com.walsvick.christopher.timecodenotes.view.FloatingActionButton;
+import com.walsvick.christopher.timecodenotes.view.NewNoteItemView;
 import com.walsvick.christopher.timecodenotes.view.NoteRecyclerViewCursorAdapter;
 
 import org.joda.time.LocalDateTime;
 
 
-public class TakeNotesActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class TakeNotesActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor>,NewNoteItemView.NewNoteOnBackPressedListener {
 
     private Project project;
 
@@ -50,11 +51,13 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
     private LinearLayout bottomContainer;
 
     // view items for new note cardview
-    private CardView newNoteItemView;
+    private NewNoteItemView newNoteItemView;
     private TextView newNoteTimeStamp;
     private EditText newNoteEditText;
     private Spinner newNoteCameraSpinner;
     private LocalDateTime timeOfNewNote;
+
+    private boolean mNewNoteOnBackPressed;
 
     private NoteDAO dao;
 
@@ -90,7 +93,8 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         editTimeStampButton = (ImageButton) findViewById(R.id.edit_time_stamp_button);
         bottomContainer = (LinearLayout) findViewById(R.id.activity_take_notes_bottom_container);
 
-        newNoteItemView = (CardView) findViewById(R.id.new_note_item_view);
+        newNoteItemView = (NewNoteItemView) findViewById(R.id.new_note_item_view);
+        newNoteItemView.setBackPressedListener(this);
         newNoteEditText = (EditText) findViewById(R.id.new_note_edit_text);
         newNoteTimeStamp = (TextView) findViewById(R.id.new_note_time_code);
         newNoteCameraSpinner = (Spinner) findViewById(R.id.new_note_camera_spinner);
@@ -107,7 +111,7 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
             public void onClick(View v) {
                 timeOfNewNote = LocalDateTime.now();
                 newNoteTimeStamp.setText(timeOfNewNote.toString("HH:mm:ss"));
-                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(v.getContext(),
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(v.getContext(),
                         android.R.layout.simple_spinner_item, project.getCameras());
 
                 dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -133,14 +137,9 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
                                 || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)) {
                             createNewNote();
                             newNoteItemView.setVisibility(View.GONE);
+                            newNoteEditText.clearFocus();
                             fillData();
-                            newNoteEditText.clearFocus();
                             return true;
-                        }
-                        else if ((event.getAction() == KeyEvent.ACTION_DOWN)
-                                && (keyCode == KeyEvent.KEYCODE_B)) {
-                            newNoteEditText.clearFocus();
-                            newNoteItemView.setVisibility(View.GONE);
                         }
                         return false;
                     }
@@ -226,5 +225,19 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         noteListAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void newNoteOnBackPressed() {
+        this.mNewNoteOnBackPressed = true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mNewNoteOnBackPressed) {
+            mNewNoteOnBackPressed = false;
+        } else {
+            super.onBackPressed();
+        }
     }
 }

@@ -5,7 +5,7 @@
     android:paddingTop="8dp"
     tools:context=".TakeNotes">
 
-    <android.support.v7.widget.CardView
+    <com.walsvick.christopher.timecodenotes.view.NewNoteItemView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/new_note_item_view"
         android:layout_alignParentTop="true"
@@ -63,7 +63,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginRight="8dp"/>
         </RelativeLayout>
-    </android.support.v7.widget.CardView>
+    </com.walsvick.christopher.timecodenotes.view.NewNoteItemView>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/note_recycler_view"
