@@ -3,6 +3,7 @@ package com.walsvick.christopher.timecodenotes.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
@@ -13,7 +14,7 @@ public class Note implements Parcelable {
 
     private int id;
     private int projectId;
-    private LocalDateTime timeCode;
+    private String timeCode;
     private String note;
     private String camera;
     private int cameraId;
@@ -22,7 +23,7 @@ public class Note implements Parcelable {
         id = -1;
     }
 
-    public Note(LocalDateTime timeCode) {
+    public Note(String timeCode) {
         this.timeCode = timeCode;
         id = -1;
     }
@@ -43,18 +44,14 @@ public class Note implements Parcelable {
         return camera;
     }
 
-    public LocalTime getTimeCode() {
-        return timeCode.toLocalTime();
+    public String getTimeCode() {
+        return timeCode;
     }
 
-    public LocalDateTime getLocalDateTimeCode() { return timeCode; }
+    public String getLocalDateTimeCode() { return timeCode; }
 
-    public void setTimeCode(LocalDateTime time) {
+    public void setTimeCode(String time) {
         timeCode = time;
-    }
-
-    public void setTimeCode(String s) {
-        timeCode = LocalDateTime.parse(s);
     }
 
     @Override
@@ -84,7 +81,7 @@ public class Note implements Parcelable {
 
     private Note(Parcel in) {
         id = in.readInt();
-        timeCode = new LocalDateTime(in.readString());
+        timeCode = in.readString();
         note = in.readString();
         camera = in.readString();
         cameraId = in.readInt();

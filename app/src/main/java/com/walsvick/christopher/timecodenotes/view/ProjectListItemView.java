@@ -21,18 +21,21 @@ public class ProjectListItemView {
     private TextView projectName;
     private TextView projectStartDate;
     private TextView projectCameras;
+    private TextView projectInfo;
 
     public ProjectListItemView(View v) {
         this.view = v;
         this.projectName = (TextView) v.findViewById(R.id.list_view_item_project_name);
         this.projectStartDate = (TextView) v.findViewById(R.id.list_view_item_project_date);
         this.projectCameras = (TextView) v.findViewById(R.id.list_view_item_project_camera_list);
+        this.projectInfo = (TextView) v.findViewById(R.id.list_view_item_project_add_info);
     }
 
     public void setProject(Project project) {
         this.projectName.setText(project.getName());
         this.projectStartDate.setText(project.getStartDate().toString());
         this.projectCameras.setText(StringUtils.join(project.getCameras(), ", "));
+        this.projectInfo.setText(project.getAddInfo());
     }
 
 

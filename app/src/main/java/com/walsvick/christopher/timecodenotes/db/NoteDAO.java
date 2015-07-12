@@ -24,7 +24,7 @@ public class NoteDAO {
     public int saveNote(Project p, Note n) {
         ContentValues values = new ContentValues();
         values.put(NoteTable.NOTE_PROJECT_ID, p.getId());
-        values.put(NoteTable.NOTE_TIME_CODE, n.getLocalDateTimeCode().toString());
+        values.put(NoteTable.NOTE_TIME_CODE, n.getTimeCode());
         values.put(NoteTable.NOTE_CAMERA_NAME, n.getCamera());
         values.put(NoteTable.NOTE_TEXT, n.getNote());
 
@@ -35,7 +35,7 @@ public class NoteDAO {
     public void updateNote(Project p, Note n) {
         ContentValues values = new ContentValues();
         values.put(NoteTable.NOTE_PROJECT_ID, p.getId());
-        values.put(NoteTable.NOTE_TIME_CODE, n.getLocalDateTimeCode().toString());
+        values.put(NoteTable.NOTE_TIME_CODE, n.getTimeCode());
         values.put(NoteTable.NOTE_CAMERA_NAME, n.getCamera());
         values.put(NoteTable.NOTE_TEXT, n.getNote());
 

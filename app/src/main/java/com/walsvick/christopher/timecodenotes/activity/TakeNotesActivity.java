@@ -1,23 +1,28 @@
 package com.walsvick.christopher.timecodenotes.activity;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -33,6 +38,7 @@ import com.walsvick.christopher.timecodenotes.model.Project;
 import com.walsvick.christopher.timecodenotes.view.FloatingActionButton;
 import com.walsvick.christopher.timecodenotes.view.NewNoteItemView;
 import com.walsvick.christopher.timecodenotes.view.NoteRecyclerViewCursorAdapter;
+import com.walsvick.christopher.timecodenotes.view.TimeCodePickerDialog;
 
 import org.joda.time.LocalDateTime;
 
@@ -47,7 +53,7 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
     private NoteRecyclerViewCursorAdapter noteListAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
-    private TextView timeCodeTextView;
+    private Chronometer timeCodeTextView;
     private FloatingActionButton addNoteButton;
     private ImageButton editTimeStampButton;
     private LinearLayout bottomContainer;
@@ -57,7 +63,8 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
     private TextView newNoteTimeStamp;
     private EditText newNoteEditText;
     private Spinner newNoteCameraSpinner;
-    private LocalDateTime timeOfNewNote;
+    private String timeOfNewNote;
+    private long manualBaseTime;
 
     private boolean mNewNoteOnBackPressed;
     private String mLastCameraUsed;
@@ -87,13 +94,13 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
     }
 
     private void initViewItems() {
-        timeCodeTextView = (TextView) findViewById(R.id.take_notes_time_code_text_view);
-        timeCodeTextView.setText(LocalDateTime.now().toString("HH:mm:ss"));
-        setUpTimeCodeRunnable();
+        setupTimeCodeTextView();
 
         addNoteButton = (FloatingActionButton) findViewById(R.id.take_notes_add_note_button);
         createAddNoteButtonListener();
         editTimeStampButton = (ImageButton) findViewById(R.id.edit_time_stamp_button);
+        createEditTimeStampButtonListener();
+
         bottomContainer = (LinearLayout) findViewById(R.id.activity_take_notes_bottom_container);
 
         newNoteItemView = (NewNoteItemView) findViewById(R.id.new_note_item_view);
@@ -101,6 +108,67 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         newNoteEditText = (EditText) findViewById(R.id.new_note_edit_text);
         newNoteTimeStamp = (TextView) findViewById(R.id.new_note_time_code);
         newNoteCameraSpinner = (Spinner) findViewById(R.id.new_note_camera_spinner);
+    }
+
+    private void createEditTimeStampButtonListener() {
+        editTimeStampButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(TakeNotesActivity.this);
+
+                final TimeCodePickerDialog dialog = new TimeCodePickerDialog(TakeNotesActivity.this);
+                builder.setView(dialog.getView());
+                builder.setPositiveButton("Start Time", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startTimerFromManualBase(dialog.getHours(), dialog.getMinutes(), dialog.getSeconds());
+                        dialogInterface.cancel();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                builder.create().show();
+            }
+        });
+    }
+
+    private void startTimerFromManualBase(int hours, int min, int sec) {
+        manualBaseTime = hours * 60 * 60 * 1000 + min * 60 * 1000  + sec * 10000;
+        timeCodeTextView.stop();
+        timeCodeTextView.setBase(SystemClock.elapsedRealtime());
+        timeCodeTextView.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer cArg) {
+                long time = (SystemClock.elapsedRealtime() - cArg.getBase()) + manualBaseTime;
+                int h = (int) (time / 3600000);
+                int m = (int) (time - h * 3600000) / 60000;
+                int s = (int) (time - h * 3600000 - m * 60000) / 1000;
+                String hh = h < 10 ? "0" + h : h + "";
+                String mm = m < 10 ? "0" + m : m + "";
+                String ss = s < 10 ? "0" + s : s + "";
+                cArg.setText(hh + ":" + mm + ":" + ss);
+            }
+        });
+
+        timeCodeTextView.start();
+    }
+
+    private void setupTimeCodeTextView() {
+        timeCodeTextView = (Chronometer) findViewById(R.id.take_notes_time_code_chronometer);
+        timeCodeTextView.setBase(SystemClock.elapsedRealtime());
+        timeCodeTextView.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer cArg) {
+                cArg.setText(LocalDateTime.now().toString("HH:mm:ss"));
+            }
+        });
+
+        timeCodeTextView.start();
     }
 
     private void fillData() {
@@ -112,8 +180,8 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timeOfNewNote = LocalDateTime.now();
-                newNoteTimeStamp.setText(timeOfNewNote.toString("HH:mm:ss"));
+                timeOfNewNote = timeCodeTextView.getText().toString();
+                newNoteTimeStamp.setText(timeOfNewNote);
 
 
                 ArrayList<String> cameras = project.getCameras();
@@ -172,30 +240,6 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         n.setId(noteId);
 
         mLastCameraUsed = n.getCamera();
-    }
-
-    private void setUpTimeCodeRunnable() {
-        Thread t = new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    while (!isInterrupted()) {
-                        Thread.sleep(1000);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                timeCodeTextView.setText(LocalDateTime.now().toString("HH:mm:ss"));
-                            }
-                        });
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        t.start();
     }
 
     private void getSelectedProject() {

@@ -33,7 +33,7 @@ public class NoteListItemView {
 
     public void setNote(Note note, Project project) {
         this.note = note;
-        timeCode.setText(note.getTimeCode().toString("HH:mm:ss"));
+        timeCode.setText(note.getTimeCode());
         noteText.setText(note.getNote());
 
         ArrayList<String> cameras = project.getCameras();
