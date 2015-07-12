@@ -138,7 +138,7 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
     }
 
     private void startTimerFromManualBase(int hours, int min, int sec) {
-        manualBaseTime = hours * 60 * 60 * 1000 + min * 60 * 1000  + sec * 10000;
+        manualBaseTime = hours * 60 * 60 * 1000 + min * 60 * 1000  + sec * 1000;
         timeCodeTextView.stop();
         timeCodeTextView.setBase(SystemClock.elapsedRealtime());
         timeCodeTextView.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
