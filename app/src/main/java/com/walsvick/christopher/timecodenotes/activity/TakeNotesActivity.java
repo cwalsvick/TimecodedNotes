@@ -144,7 +144,7 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         timeCodeTextView.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer cArg) {
-                long time = (SystemClock.elapsedRealtime() - cArg.getBase()) + manualBaseTime;
+                long time = ((SystemClock.elapsedRealtime() - cArg.getBase()) + manualBaseTime) % 90000000;
                 int h = (int) (time / 3600000);
                 int m = (int) (time - h * 3600000) / 60000;
                 int s = (int) (time - h * 3600000 - m * 60000) / 1000;
