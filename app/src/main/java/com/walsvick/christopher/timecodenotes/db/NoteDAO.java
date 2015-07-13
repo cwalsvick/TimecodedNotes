@@ -32,9 +32,9 @@ public class NoteDAO {
         return Integer.valueOf(noteUri.getLastPathSegment());
     }
 
-    public void updateNote(Project p, Note n) {
+    public void updateNote(Note n) {
         ContentValues values = new ContentValues();
-        values.put(NoteTable.NOTE_PROJECT_ID, p.getId());
+        values.put(NoteTable.NOTE_PROJECT_ID, n.getProjectId());
         values.put(NoteTable.NOTE_TIME_CODE, n.getTimeCode());
         values.put(NoteTable.NOTE_CAMERA_NAME, n.getCamera());
         values.put(NoteTable.NOTE_TEXT, n.getNote());

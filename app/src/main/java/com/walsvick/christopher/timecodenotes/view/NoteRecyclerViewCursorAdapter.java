@@ -20,6 +20,7 @@ public class NoteRecyclerViewCursorAdapter extends RecyclerView.Adapter<NoteRecy
     private Cursor dataCursor;
     private Context context;
     private Project project;
+    private EditNoteDoneListener editNoteListener;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -28,24 +29,33 @@ public class NoteRecyclerViewCursorAdapter extends RecyclerView.Adapter<NoteRecy
         // each data item is just a string in this case
         public NoteListItemView listItemView;
 
-        public ViewHolder(View v) {
+        public ViewHolder(View v, EditNoteDoneListener listener) {
             super(v);
-            listItemView = new NoteListItemView(v);
+            listItemView = new NoteListItemView(v, listener);
+
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listItemView.editNote();
+                }
+            });
         }
+
     }
 
-    public NoteRecyclerViewCursorAdapter(Context context, Cursor cursor, Project p) {
+    public NoteRecyclerViewCursorAdapter(Context context, Cursor cursor, Project p, EditNoteDoneListener listener) {
         this.context = context;
         this.dataCursor = cursor;
         this.project = p;
+        this.editNoteListener = listener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
-        View itemView = LayoutInflater.from(parent.getContext())
+        final View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_view_item_note, parent, false);
 
-        return new ViewHolder(itemView);
+        return new ViewHolder(itemView, editNoteListener);
     }
 
     @Override
@@ -88,4 +98,6 @@ public class NoteRecyclerViewCursorAdapter extends RecyclerView.Adapter<NoteRecy
         }
         return NoteDAO.cursorToNote(dataCursor);
     }
+
+
 }

@@ -35,6 +35,7 @@ import com.walsvick.christopher.timecodenotes.db.NoteDAO;
 import com.walsvick.christopher.timecodenotes.db.NoteTable;
 import com.walsvick.christopher.timecodenotes.model.Note;
 import com.walsvick.christopher.timecodenotes.model.Project;
+import com.walsvick.christopher.timecodenotes.view.EditNoteDoneListener;
 import com.walsvick.christopher.timecodenotes.view.FloatingActionButton;
 import com.walsvick.christopher.timecodenotes.view.NewNoteItemView;
 import com.walsvick.christopher.timecodenotes.view.NoteRecyclerViewCursorAdapter;
@@ -45,7 +46,9 @@ import org.joda.time.LocalDateTime;
 import java.util.ArrayList;
 
 
-public class TakeNotesActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor>,NewNoteItemView.NewNoteOnBackPressedListener {
+public class TakeNotesActivity extends ActionBarActivity implements
+        LoaderManager.LoaderCallbacks<Cursor>,NewNoteItemView.NewNoteOnBackPressedListener,
+        EditNoteDoneListener {
 
     private Project project;
 
@@ -56,7 +59,6 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
     private Chronometer timeCodeTextView;
     private FloatingActionButton addNoteButton;
     private ImageButton editTimeStampButton;
-    private LinearLayout bottomContainer;
 
     // view items for new note cardview
     private NewNoteItemView newNoteItemView;
@@ -85,7 +87,7 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         noteListView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         noteListView.setLayoutManager(layoutManager);
-        noteListAdapter = new NoteRecyclerViewCursorAdapter(this, null, project);
+        noteListAdapter = new NoteRecyclerViewCursorAdapter(this, null, project, this);
         noteListView.setAdapter(noteListAdapter);
 
         initViewItems();
@@ -100,8 +102,6 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         createAddNoteButtonListener();
         editTimeStampButton = (ImageButton) findViewById(R.id.edit_time_stamp_button);
         createEditTimeStampButtonListener();
-
-        bottomContainer = (LinearLayout) findViewById(R.id.activity_take_notes_bottom_container);
 
         newNoteItemView = (NewNoteItemView) findViewById(R.id.new_note_item_view);
         newNoteItemView.setBackPressedListener(this);
@@ -183,18 +183,12 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
                 timeOfNewNote = timeCodeTextView.getText().toString();
                 newNoteTimeStamp.setText(timeOfNewNote);
 
-
-                ArrayList<String> cameras = project.getCameras();
-                if (mLastCameraUsed != null) {
-                    cameras.remove(mLastCameraUsed);
-                    cameras.add(0, mLastCameraUsed);
-                }
-
                 ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(v.getContext(),
-                        android.R.layout.simple_spinner_item, cameras);
+                        android.R.layout.simple_spinner_item, project.getCameras());
 
                 dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 newNoteCameraSpinner.setAdapter(dataAdapter);
+                newNoteCameraSpinner.setSelection(mLastCameraUsed != null ? project.getCameras().indexOf(mLastCameraUsed) : 0);
                 newNoteEditText.setText(null);
                 newNoteItemView.setVisibility(View.VISIBLE);
 
@@ -240,6 +234,10 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         n.setId(noteId);
 
         mLastCameraUsed = n.getCamera();
+    }
+
+    private void editNote(Note note) {
+        dao.updateNote(note);
     }
 
     private void getSelectedProject() {
@@ -298,5 +296,16 @@ public class TakeNotesActivity extends ActionBarActivity implements LoaderManage
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onDone(Note note) {
+        editNote(note);
+        fillData();
+    }
+
+    @Override
+    public void onBackPressedWhileEdititing() {
+        this.mNewNoteOnBackPressed = true;
     }
 }
