@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 
@@ -14,7 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 public class NoteItemView extends CardView {
 
     private Context mContext;
-    private EditNoteDoneListener mListener;
+    private EditNoteListener mListener;
 
     public NoteItemView(Context context) {
         super(context);
@@ -26,7 +25,7 @@ public class NoteItemView extends CardView {
         this.mContext = context;
     }
 
-    public void setBackPressedListener(EditNoteDoneListener listener) {
+    public void setBackPressedListener(EditNoteListener listener) {
         this.mListener = listener;
     }
 

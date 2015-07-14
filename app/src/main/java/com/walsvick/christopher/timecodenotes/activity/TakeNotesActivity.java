@@ -12,11 +12,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -35,7 +32,7 @@ import com.walsvick.christopher.timecodenotes.db.NoteDAO;
 import com.walsvick.christopher.timecodenotes.db.NoteTable;
 import com.walsvick.christopher.timecodenotes.model.Note;
 import com.walsvick.christopher.timecodenotes.model.Project;
-import com.walsvick.christopher.timecodenotes.view.EditNoteDoneListener;
+import com.walsvick.christopher.timecodenotes.view.EditNoteListener;
 import com.walsvick.christopher.timecodenotes.view.FloatingActionButton;
 import com.walsvick.christopher.timecodenotes.view.NewNoteItemView;
 import com.walsvick.christopher.timecodenotes.view.NoteRecyclerViewCursorAdapter;
@@ -43,12 +40,10 @@ import com.walsvick.christopher.timecodenotes.view.TimeCodePickerDialog;
 
 import org.joda.time.LocalDateTime;
 
-import java.util.ArrayList;
-
 
 public class TakeNotesActivity extends ActionBarActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,NewNoteItemView.NewNoteOnBackPressedListener,
-        EditNoteDoneListener {
+        EditNoteListener {
 
     private Project project;
 
@@ -72,6 +67,9 @@ public class TakeNotesActivity extends ActionBarActivity implements
     private String mLastCameraUsed;
 
     private NoteDAO dao;
+    private boolean mNewNoteActive;
+    private boolean mEditNoteActive;
+    private Note mNoteBeingEdited;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -200,6 +198,7 @@ public class TakeNotesActivity extends ActionBarActivity implements
                             inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
                         } else {
                             inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                            resetNewNoteView();
                         }
                     }
                 });
@@ -209,17 +208,27 @@ public class TakeNotesActivity extends ActionBarActivity implements
                                 && (keyCode == KeyEvent.KEYCODE_ENTER
                                 || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)) {
                             createNewNote();
-                            newNoteItemView.setVisibility(View.GONE);
-                            newNoteEditText.clearFocus();
+                            resetNewNoteView();
                             fillData();
+                            invalidateOptionsMenu();
                             return true;
                         }
                         return false;
                     }
                 });
                 newNoteEditText.requestFocus();
+
+                mNewNoteActive = true;
+                invalidateOptionsMenu();
             }
         });
+    }
+
+    private void resetNewNoteView() {
+        newNoteItemView.setVisibility(View.GONE);
+        newNoteEditText.setText(null);
+        newNoteCameraSpinner.setSelection(mLastCameraUsed != null ? project.getCameras().indexOf(mLastCameraUsed) : 0);
+        newNoteEditText.clearFocus();
     }
 
     private void createNewNote() {
@@ -249,6 +258,18 @@ public class TakeNotesActivity extends ActionBarActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_take_notes, menu);
+
+        if (mNewNoteActive) {
+            MenuItem cancelNote = menu.findItem(R.id.cancel_note);
+            cancelNote.setVisible(true);
+            mNewNoteActive = false;
+        }
+
+        if (mEditNoteActive) {
+            MenuItem deleteNote = menu.findItem(R.id.delete_note);
+            deleteNote.setVisible(true);
+            mEditNoteActive = false;
+        }
         return true;
     }
 
@@ -259,11 +280,23 @@ public class TakeNotesActivity extends ActionBarActivity implements
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-   /*     if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.cancel_note:
+                mNewNoteActive = false;
+                resetNewNoteView();
+                invalidateOptionsMenu();
+                break;
+            case R.id.delete_note:
+                mEditNoteActive = false;
+                dao.deleteNote(mNoteBeingEdited);
+                noteListAdapter.notifyDataSetChanged();
+                fillData();
+                invalidateOptionsMenu();
+                break;
+            default:
+
         }
-*/
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -287,6 +320,7 @@ public class TakeNotesActivity extends ActionBarActivity implements
     @Override
     public void newNoteOnBackPressed() {
         this.mNewNoteOnBackPressed = true;
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -299,13 +333,22 @@ public class TakeNotesActivity extends ActionBarActivity implements
     }
 
     @Override
+    public void onEdit(Note n) {
+        mNoteBeingEdited = n;
+        mEditNoteActive = true;
+        invalidateOptionsMenu();
+    }
+
+    @Override
     public void onDone(Note note) {
         editNote(note);
         fillData();
+        invalidateOptionsMenu();
     }
 
     @Override
     public void onBackPressedWhileEdititing() {
         this.mNewNoteOnBackPressed = true;
+        invalidateOptionsMenu();
     }
 }

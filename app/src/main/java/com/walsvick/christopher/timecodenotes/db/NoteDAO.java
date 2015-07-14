@@ -60,6 +60,12 @@ public class NoteDAO {
         return notes;
     }
 
+    public void deleteNote(Note n) {
+        Uri uri = Uri.parse(DBContentProvider.NOTE_CONTENT_URI + "/" + + n.getId());
+
+        context.getContentResolver().delete(uri, null, null);
+    }
+
     public static Note cursorToNote(Cursor cursor) {
         Note n = new Note();
 

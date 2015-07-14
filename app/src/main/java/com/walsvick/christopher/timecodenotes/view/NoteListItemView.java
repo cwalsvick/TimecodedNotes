@@ -16,7 +16,7 @@ import com.walsvick.christopher.timecodenotes.model.Project;
 /**
  * Created on 1/18/2015 by Christopher.
  */
-public class NoteListItemView implements EditNoteDoneListener {
+public class NoteListItemView implements EditNoteListener {
 
     private Note mNote;
     private Project mProject;
@@ -28,10 +28,10 @@ public class NoteListItemView implements EditNoteDoneListener {
     private TextView cameraTextView;
 
     private EditText editNoteTextView;
-    private EditNoteDoneListener mListener;
+    private EditNoteListener mListener;
 
 
-    public NoteListItemView(View v, EditNoteDoneListener listener) {
+    public NoteListItemView(View v, EditNoteListener listener) {
         this.mView = (NoteItemView) v;
         this.mListener = listener;
 
@@ -92,13 +92,7 @@ public class NoteListItemView implements EditNoteDoneListener {
                 }
             }
         });
-
-     /*   editNoteTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-
-            }
-        });*/
+        
         editNoteTextView.setOnKeyListener(new EditText.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN)
@@ -120,6 +114,11 @@ public class NoteListItemView implements EditNoteDoneListener {
     }
 
     @Override
+    public void onEdit(Note n) {
+
+    }
+
+    @Override
     public void onDone(Note note) {
 
     }
@@ -128,5 +127,9 @@ public class NoteListItemView implements EditNoteDoneListener {
     public void onBackPressedWhileEdititing() {
         resetNoteView();
         mListener.onBackPressedWhileEdititing();
+    }
+
+    public Note getNote() {
+        return this.mNote;
     }
 }

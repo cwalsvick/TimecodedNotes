@@ -21,5 +21,7 @@
     <string name="list_view_project_cameras_label">Cameras: </string>
     <string name="dialog_new_note_create">Create</string>
     <string name="dialog_new_note_cancel">Cancel</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
 
 </resources>

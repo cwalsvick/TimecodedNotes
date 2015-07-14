@@ -154,6 +154,10 @@ public class DBContentProvider extends ContentProvider {
                 where = NoteTable.NOTE_PROJECT_ID + "=" + Integer.parseInt(uri.getLastPathSegment());
                 sqlDB.delete(NOTE_TABLE, where, null);
                 break;
+            case NOTE_BY_ID:
+                where = NoteTable.NOTE_ID + "=" + Integer.parseInt(uri.getLastPathSegment());
+                sqlDB.delete(NOTE_TABLE, where, null);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
