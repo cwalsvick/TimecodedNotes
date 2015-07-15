@@ -287,11 +287,27 @@ public class TakeNotesActivity extends ActionBarActivity implements
                 invalidateOptionsMenu();
                 break;
             case R.id.delete_note:
-                mEditNoteActive = false;
-                dao.deleteNote(mNoteBeingEdited);
-                noteListAdapter.notifyDataSetChanged();
-                fillData();
-                invalidateOptionsMenu();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Delete Note");
+                builder.setMessage("Are you sure you want to delete this note?");
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mEditNoteActive = false;
+                        dao.deleteNote(mNoteBeingEdited);
+                        noteListAdapter.notifyDataSetChanged();
+                        fillData();
+                        invalidateOptionsMenu();
+                        dialogInterface.cancel();
+                    }
+                });
+                builder.create().show();
                 break;
             default:
 
