@@ -9,5 +9,5 @@ public interface EditNoteListener {
 
     public void onEdit(Note note);
     public void onDone(Note note);
-    public void onBackPressedWhileEdititing();
+    public void onBackPressedWhileEditing();
 }

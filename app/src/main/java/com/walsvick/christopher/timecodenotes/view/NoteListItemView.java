@@ -124,9 +124,9 @@ public class NoteListItemView implements EditNoteListener {
     }
 
     @Override
-    public void onBackPressedWhileEdititing() {
+    public void onBackPressedWhileEditing() {
         resetNoteView();
-        mListener.onBackPressedWhileEdititing();
+        mListener.onBackPressedWhileEditing();
     }
 
     public Note getNote() {

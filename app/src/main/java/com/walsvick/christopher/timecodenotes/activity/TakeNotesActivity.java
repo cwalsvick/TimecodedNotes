@@ -363,7 +363,7 @@ public class TakeNotesActivity extends ActionBarActivity implements
     }
 
     @Override
-    public void onBackPressedWhileEdititing() {
+    public void onBackPressedWhileEditing() {
         this.mNewNoteOnBackPressed = true;
         invalidateOptionsMenu();
     }

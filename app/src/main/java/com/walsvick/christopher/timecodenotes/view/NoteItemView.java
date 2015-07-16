@@ -35,7 +35,7 @@ public class NoteItemView extends CardView {
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
 
         if (imm.isActive() && event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-            mListener.onBackPressedWhileEdititing();
+            mListener.onBackPressedWhileEditing();
         }
 
         return super.dispatchKeyEventPreIme(event);
