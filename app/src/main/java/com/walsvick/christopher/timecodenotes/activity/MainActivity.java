@@ -32,6 +32,7 @@ import com.walsvick.christopher.timecodenotes.view.FloatingActionButton;
 import com.walsvick.christopher.timecodenotes.view.NewProjectDialog;
 import com.walsvick.christopher.timecodenotes.view.RecyclerItemClickListener;
 import com.walsvick.christopher.timecodenotes.view.ProjectRecyclerViewCursorAdapter;
+import com.walsvick.christopher.timecodenotes.view.RecyclerItemClickListener.SimpleOnItemClickListener;
 
 public class MainActivity extends ActionBarActivity implements
         NewProjectDialog.NewProjectDialogListener,
@@ -70,18 +71,23 @@ public class MainActivity extends ActionBarActivity implements
 
         projectListAdapter = new ProjectRecyclerViewCursorAdapter(this, null);
         projectListView.setAdapter(projectListAdapter);
-        projectListView.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Intent i = new Intent(MainActivity.this, TakeNotesActivity.class);
-                i.putExtra(SELECTED_PROJECT, (Project) projectListAdapter.getItem(position));
-                startActivity(i);
-            }
-        }));
+        projectListView.addOnItemTouchListener(new RecyclerItemClickListener(this,
+                new OnItemClickListener()));
 
         setListViewClickListener();
         registerForContextMenu(projectListView);
         fillData();
+    }
+
+    private class OnItemClickListener extends RecyclerItemClickListener.SimpleOnItemClickListener {
+
+        @Override
+        public void onItemClick(View childView, int position) {
+            Intent i = new Intent(MainActivity.this, TakeNotesActivity.class);
+            i.putExtra(SELECTED_PROJECT, (Project) projectListAdapter.getItem(position));
+            startActivity(i);
+        }
+
     }
 
     @Override
@@ -106,20 +112,8 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        menu.setHeaderTitle("Action Menu");
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_context_project_list, menu);
-    }
-
-    @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-
-        Project project = (Project) projectListAdapter.getItem(info.position);
+        Project project = (Project) projectListAdapter.getItem(projectListAdapter.getPosition());
 
         switch (item.getItemId()) {
             case R.id.menu_item_view_project_info:

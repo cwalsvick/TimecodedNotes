@@ -23,5 +23,6 @@
     <string name="dialog_new_note_cancel">Cancel</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="delete_project">Delete Project</string>
 
 </resources>

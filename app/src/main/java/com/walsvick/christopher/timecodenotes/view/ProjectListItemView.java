@@ -31,6 +31,10 @@ public class ProjectListItemView {
         this.projectInfo = (TextView) v.findViewById(R.id.list_view_item_project_add_info);
     }
 
+    public View getView() {
+        return this.view;
+    }
+
     public void setProject(Project project) {
         this.projectName.setText(project.getName());
         this.projectStartDate.setText(project.getStartDate().toString());
