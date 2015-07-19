@@ -24,5 +24,7 @@
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="delete_project">Delete Project</string>
+    <string name="clone_project">Clone Project</string>
+    <string name="edit_project">Edit Project</string>
 
 </resources>
