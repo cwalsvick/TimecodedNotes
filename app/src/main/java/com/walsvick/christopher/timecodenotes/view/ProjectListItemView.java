@@ -38,7 +38,7 @@ public class ProjectListItemView {
     public void setProject(Project project) {
         this.projectName.setText(project.getName());
         this.projectStartDate.setText(project.getStartDate().toString());
-        this.projectCameras.setText(StringUtils.join(project.getCameras(), ", "));
+        this.projectCameras.setText("Cameras: " + StringUtils.join(project.getCameras(), ", "));
         this.projectInfo.setText(project.getAddInfo());
     }
 
