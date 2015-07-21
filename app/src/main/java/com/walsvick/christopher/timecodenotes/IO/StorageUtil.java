@@ -52,10 +52,8 @@ public class StorageUtil {
         BufferedOutputStream stream;
         try {
             stream = new BufferedOutputStream(new FileOutputStream(outputFile));
-            stream.write("Date\tTime\tCamera\tNote\n".getBytes());
+            stream.write("Time\tCamera\tNote\n".getBytes());
             for (Note n : notes) {
-               // stream.write(n.getLocalDateTimeCode().toLocalDate().toString("yyyy-MM-dd").getBytes());
-               // stream.write("\t".getBytes());
                 stream.write(n.getTimeCode().getBytes());
                 stream.write("\t".getBytes());
                 stream.write(n.getCamera().getBytes());
