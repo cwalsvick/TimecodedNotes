@@ -6,6 +6,7 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,6 +34,8 @@ import com.walsvick.christopher.timecodenotes.view.NewProjectDialog;
 import com.walsvick.christopher.timecodenotes.view.RecyclerItemClickListener;
 import com.walsvick.christopher.timecodenotes.view.ProjectRecyclerViewCursorAdapter;
 import com.walsvick.christopher.timecodenotes.view.RecyclerItemClickListener.SimpleOnItemClickListener;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class MainActivity extends ActionBarActivity implements
         NewProjectDialog.NewProjectDialogListener,
@@ -139,12 +142,18 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void emailProject(Project project) {
+        Resources res = getResources();
+        String[] emailBody = new String[] {res.getString(R.string.email_body_prefix),
+            res.getString(R.string.email_body_name_label) + project.getName(),
+            res.getString(R.string.email_body_date_label) + project.getStartDate(),
+            res.getString(R.string.email_body_cameras_label) + StringUtils.join(project.getCameras(), ", "),
+            res.getString(R.string.email_body_additional_info_label) + project.getAddInfo()};
+
         Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-        emailIntent.setType("image/jpeg");
+        emailIntent.setType("*/*");
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-                "Test Subject");
-        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-                "Test contents");
+                res.getString(R.string.email_subject_prefix, res.getString(R.string.app_name)) + project.getName());
+        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, StringUtils.join(emailBody, "\n"));
 
         String fileName = StorageUtil.exportToTSV(this, project);
         Log.d(getClass().getSimpleName(), "fileUri=" + Uri.parse("file://" + fileName));

@@ -133,8 +133,7 @@ public class NewProjectDialog implements DatePickerDialog.OnDateSetListener {
         builder.setView(cameraList);
 
         builder.setTitle(
-                context.getResources().getString(R.string.dialog_new_project_cameras_partial_title)
-                        + " " + newProject.getName());
+                context.getResources().getString(R.string.dialog_new_project_cameras_partial_title) + newProject.getName());
 
         builder.setPositiveButton(context.getResources().getString(R.string.dialog_new_project_next),
                 new DialogInterface.OnClickListener() {

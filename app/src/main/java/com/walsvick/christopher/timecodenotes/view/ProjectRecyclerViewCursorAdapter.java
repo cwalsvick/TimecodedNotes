@@ -48,6 +48,7 @@ public class ProjectRecyclerViewCursorAdapter extends RecyclerView.Adapter<Proje
             contextMenu.add(Menu.NONE, R.id.menu_item_edit_project, Menu.NONE, R.string.edit_project);
             contextMenu.add(Menu.NONE, R.id.menu_item_delete_project, Menu.NONE, R.string.delete_project);
             contextMenu.add(Menu.NONE, R.id.menu_item_clone_project, Menu.NONE, R.string.clone_project);
+            contextMenu.add(Menu.NONE, R.id.menu_item_email_project, Menu.NONE, R.string.email_project);
         }
     }
 

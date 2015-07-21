@@ -12,7 +12,7 @@
     <string name="dialog_new_project_name_hint">New Project</string>
     <string name="dialog_new_project_date_title">Project Data</string>
     <string name="dialog_new_project_back">Back</string>
-    <string name="dialog_new_project_cameras_partial_title">Add cameras to </string>
+    <string name="dialog_new_project_cameras_partial_title">Add cameras to&#160;</string>
     <string name="dialog_new_project_add_camera">Add Camera</string>
     <string name="dialog_new_project_camera_input_title">New Camera Name</string>
     <string name="dialog_new_project_done">Done</string>
@@ -26,5 +26,12 @@
     <string name="delete_project">Delete Project</string>
     <string name="clone_project">Clone Project</string>
     <string name="edit_project">Edit Project</string>
+    <string name="email_project">E-mail Project</string>
+    <string name="email_subject_prefix">[%s] Notes from&#160;</string>
+    <string name="email_body_prefix">Attached are your notes from:\n</string>
+    <string name="email_body_additional_info_label">Additional Project Information:&#160;</string>
+    <string name="email_body_date_label">Project Date:&#160;</string>
+    <string name="email_body_name_label">Project Name:&#160;</string>
+    <string name="email_body_cameras_label">Cameras:&#160;</string>
 
 </resources>
