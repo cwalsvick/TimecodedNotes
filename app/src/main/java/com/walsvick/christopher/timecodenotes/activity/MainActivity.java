@@ -14,13 +14,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView;
 
 import com.walsvick.christopher.timecodenotes.R;
@@ -33,7 +28,6 @@ import com.walsvick.christopher.timecodenotes.view.FloatingActionButton;
 import com.walsvick.christopher.timecodenotes.view.NewProjectDialog;
 import com.walsvick.christopher.timecodenotes.view.RecyclerItemClickListener;
 import com.walsvick.christopher.timecodenotes.view.ProjectRecyclerViewCursorAdapter;
-import com.walsvick.christopher.timecodenotes.view.RecyclerItemClickListener.SimpleOnItemClickListener;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -53,6 +47,7 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(getResources().getString(R.string.project_list));
         setContentView(R.layout.activity_main);
         projectDAO = new ProjectDAO(this);
 
@@ -77,7 +72,6 @@ public class MainActivity extends ActionBarActivity implements
         projectListView.addOnItemTouchListener(new RecyclerItemClickListener(this,
                 new OnItemClickListener()));
 
-        setListViewClickListener();
         registerForContextMenu(projectListView);
         fillData();
     }
@@ -91,27 +85,6 @@ public class MainActivity extends ActionBarActivity implements
             startActivity(i);
         }
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-       /* if (id == R.id.action_settings) {
-            return true;
-        }
-        if (id == R.id.new_project) {
-            NewProjectDialog dialog = new NewProjectDialog(this, this);
-            dialog.begin();
-        }*/
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -188,9 +161,25 @@ public class MainActivity extends ActionBarActivity implements
         StorageUtil.exportToTSV(this, p);
     }
 
-    private void deleteProject(Project p) {
-        projectDAO.deleteProject(p);
-        fillData();
+    private void deleteProject(final Project p) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Delete Project");
+        builder.setMessage("Are you sure you want to delete this project?");
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                projectDAO.deleteProject(p);
+                fillData();
+                dialogInterface.dismiss();
+            }
+        });
+        builder.create().show();
     }
 
     private void cloneProject(Project projectToClone) {
@@ -216,17 +205,6 @@ public class MainActivity extends ActionBarActivity implements
         super.onPause();
     }
 
-    private void setListViewClickListener() {
-        /*projectListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(MainActivity.this, TakeNotesActivity.class);
-                i.putExtra(SELECTED_PROJECT,
-                        projectDAO.cursorToProject((Cursor) projectListView.getItemAtPosition(position)));
-                startActivity(i);
-            }
-        });*/
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

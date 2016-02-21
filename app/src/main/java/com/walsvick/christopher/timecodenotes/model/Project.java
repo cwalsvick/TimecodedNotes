@@ -68,6 +68,10 @@ public class Project implements Parcelable {
         return cameras;
     }
 
+    public String getCamera(int pos) {
+        return pos >= cameras.size() ? null : cameras.get(pos);
+    }
+
     public void setCameras(List<String> list) {
         this.cameras = new ArrayList<>(list);
     }

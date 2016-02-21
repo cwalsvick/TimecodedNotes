@@ -30,13 +30,12 @@ public class StorageUtil {
     public static String LOG_TAG = "STORAGE_SAVE_PROJECT";
 
     public static String exportToTSV(final Context context, Project project) {
+        int fileCopyNum = 0;
+
         if (!isExternalStorageWritable()) {
             createErrorDialog(context, "External storage is unavailable.");
             return null;
         }
-
-        NoteDAO dao = new NoteDAO(context);
-        ArrayList<Note> notes = dao.getAllNotes(project);
 
         File root = Environment.getExternalStorageDirectory();
         File appDir = new File(root.getAbsolutePath() + APP_DIRECTORY);
@@ -47,12 +46,37 @@ public class StorageUtil {
             return null;
         }
 
-        File outputFile;
-        outputFile = new File(appDir, generateFileName(project));
+        File outputFile = new File (appDir, generateFileName(project, fileCopyNum));
+
+        while (outputFile.exists()) {
+            outputFile = new File(appDir, generateFileName(project, fileCopyNum));
+            fileCopyNum++;
+            Log.d(LOG_TAG, "newOutputFileName: " + outputFile.getName());
+        }
+
+        writeFile(context, project, outputFile);
+
+
+        return outputFile.getPath();
+    }
+
+    private static void writeFile(Context context, Project project, File outputFile) {
+        NoteDAO dao = new NoteDAO(context);
+        ArrayList<Note> notes = dao.getAllNotes(project);
+
         BufferedOutputStream stream;
         try {
             stream = new BufferedOutputStream(new FileOutputStream(outputFile));
-            stream.write("Time\tCamera\tNote\n".getBytes());
+            stream.write(new String("Project\t" + project.getName()).getBytes());
+            stream.write("\nDate\t".getBytes());
+            stream.write(new String(project.getStartDate().toString()).getBytes());
+            stream.write("\nCameras\t".getBytes());
+            for (String camera : project.getCameras()) {
+                stream.write(new String(camera + "\t").getBytes());
+            }
+            stream.write(new String("\nAdditional Info\t" + project.getAddInfo() + "\n").getBytes());
+
+            stream.write("\n\nTime\tCamera\tNote\n".getBytes());
             for (Note n : notes) {
                 stream.write(n.getTimeCode().getBytes());
                 stream.write("\t".getBytes());
@@ -81,10 +105,6 @@ public class StorageUtil {
             e.printStackTrace();
             Log.d(LOG_TAG, "IOException");
         }
-
-        return outputFile.getAbsolutePath();
-
-
     }
 
     private static void createErrorDialog(Context context, String s) {
@@ -111,8 +131,13 @@ public class StorageUtil {
         dialog.show();
     }
 
-    public static String generateFileName(Project p) {
-        return p.getName() + "_" + p.getStartDate().toString("yyyy-MM-dd") + ".tsv";
+    public static String generateFileName(Project p, int fileCopyNum) {
+        String fileCopyString = "";
+
+        if (fileCopyNum > 0) {
+            fileCopyString = "(" + fileCopyNum + ")";
+        }
+        return p.getName() + "_" + p.getStartDate().toString("yyyy-MM-dd") + fileCopyString + ".tsv";
     }
 
    // Checks if external storage is available for read and write

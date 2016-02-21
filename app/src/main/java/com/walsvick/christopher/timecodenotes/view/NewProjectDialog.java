@@ -9,9 +9,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.walsvick.christopher.timecodenotes.R;
 import com.walsvick.christopher.timecodenotes.model.Project;
@@ -80,16 +82,7 @@ public class NewProjectDialog implements DatePickerDialog.OnDateSetListener {
         builder.setView(editText);
 
         builder.setTitle(context.getResources().getString(R.string.dialog_new_project_name_title));
-        builder.setPositiveButton(context.getResources().getString(R.string.dialog_new_project_next),
-                new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        newProject.setName(editText.getText().toString());
-                        launchProjectStartDateDialog();
-                        //dialog.cancel();
-                    }
-                });
+        builder.setPositiveButton(context.getResources().getString(R.string.dialog_new_project_next), null);
         builder.setNegativeButton(context.getResources().getString(R.string.dialog_new_project_name_cancel),
                 new DialogInterface.OnClickListener() {
 
@@ -99,8 +92,29 @@ public class NewProjectDialog implements DatePickerDialog.OnDateSetListener {
                     }
                 });
 
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        String name = editText.getText().toString();
+
+                        if (name == null || name.isEmpty()) {
+                            Toast.makeText(context, "Name cannot be empty.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            newProject.setName(editText.getText().toString());
+                            launchProjectStartDateDialog();
+                            dialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
         dialog.show();
     }
 
@@ -135,14 +149,8 @@ public class NewProjectDialog implements DatePickerDialog.OnDateSetListener {
         builder.setTitle(
                 context.getResources().getString(R.string.dialog_new_project_cameras_partial_title) + newProject.getName());
 
-        builder.setPositiveButton(context.getResources().getString(R.string.dialog_new_project_next),
-                new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(context.getResources().getString(R.string.dialog_new_project_next), null);
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        launchAdditionalInfoDialog();
-                    }
-                });
 
         builder.setNegativeButton(context.getResources().getString(R.string.dialog_new_project_back),
                 new DialogInterface.OnClickListener() {
@@ -162,8 +170,29 @@ public class NewProjectDialog implements DatePickerDialog.OnDateSetListener {
                     }
                 });
 
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            if (newProject.getCameras().size() < 1) {
+                                Toast.makeText(context, "You must add at least one camera.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                launchAdditionalInfoDialog();
+                                dialog.dismiss();
+                            }
+                        }
+                    });
+            }
+        });
         dialog.show();
     }
 
@@ -191,16 +220,7 @@ public class NewProjectDialog implements DatePickerDialog.OnDateSetListener {
         builder.setView(editText);
 
         builder.setTitle(context.getResources().getString(R.string.dialog_new_project_camera_input_title));
-        builder.setPositiveButton(context.getResources().getString(R.string.dialog_new_project_done),
-                new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        newProject.addCamera(editText.getText().toString());
-                        launchProjectCameraListDialog();
-                        dialog.cancel();
-                    }
-                });
+        builder.setPositiveButton(context.getResources().getString(R.string.dialog_new_project_done), null);
         builder.setNegativeButton(context.getResources().getString(R.string.dialog_new_project_back),
                 new DialogInterface.OnClickListener() {
 
@@ -211,8 +231,29 @@ public class NewProjectDialog implements DatePickerDialog.OnDateSetListener {
                     }
                 });
 
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        String cameraName = editText.getText().toString();
+
+                        if (cameraName == null || cameraName.isEmpty()) {
+                            Toast.makeText(context, "Camera name cannot be empty.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            newProject.addCamera(editText.getText().toString());
+                            launchProjectCameraListDialog();
+                            dialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
         dialog.show();
     }
 

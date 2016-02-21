@@ -13,7 +13,7 @@ import android.view.View;
  *
  * Licence: MIT
  *
- * @author Leo Nikkilä <hello@lnikki.la>
+ * @author Leo Nikkila <hello@lnikki.la>
  */
 public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
 

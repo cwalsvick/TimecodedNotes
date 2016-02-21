@@ -236,7 +236,7 @@ public class TakeNotesActivity extends ActionBarActivity implements
         n.setProjectId(project.getId());
         n.setTimeCode(timeOfNewNote);
         n.setNote(newNoteEditText.getText().toString());
-        n.setCamera(project.getCameras().get(newNoteCameraSpinner.getSelectedItemPosition()));
+        n.setCamera(project.getCamera(newNoteCameraSpinner.getSelectedItemPosition()));
         n.setProjectId(project.getId());
 
         int noteId = dao.saveNote(project, n);
