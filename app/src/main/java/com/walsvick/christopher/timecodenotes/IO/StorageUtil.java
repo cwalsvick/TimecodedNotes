@@ -48,14 +48,13 @@ public class StorageUtil {
 
         File outputFile = new File (appDir, generateFileName(project, fileCopyNum));
 
-        while (outputFile.exists()) {
-            outputFile = new File(appDir, generateFileName(project, fileCopyNum));
-            fileCopyNum++;
-            Log.d(LOG_TAG, "newOutputFileName: " + outputFile.getName());
-        }
+//        while (outputFile.exists()) {
+//            outputFile = new File(appDir, generateFileName(project, fileCopyNum));
+//            fileCopyNum++;
+//            Log.d(LOG_TAG, "newOutputFileName: " + outputFile.getName());
+//        }
 
         writeFile(context, project, outputFile);
-
 
         return outputFile.getPath();
     }
@@ -137,7 +136,7 @@ public class StorageUtil {
         if (fileCopyNum > 0) {
             fileCopyString = "(" + fileCopyNum + ")";
         }
-        return p.getName() + "_" + p.getStartDate().toString("yyyy-MM-dd") + fileCopyString + ".tsv";
+        return new String("[TimeCodeNodes]" + p.getName().replaceAll("[^a-zA-Z0-9.-]", "_") + "_" + fileCopyString + ".tsv");
     }
 
    // Checks if external storage is available for read and write

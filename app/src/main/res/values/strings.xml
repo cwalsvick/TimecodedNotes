@@ -35,5 +35,7 @@
     <string name="email_body_date_label">Project Date:&#160;</string>
     <string name="email_body_name_label">Project Name:&#160;</string>
     <string name="email_body_cameras_label">Cameras:&#160;</string>
+    <string name="export_to_device">Export to Device</string>
+    <string name="export_and_share">Export and Share</string>
 
 </resources>
