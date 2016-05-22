@@ -7,7 +7,7 @@ import com.walsvick.christopher.timecodenotes.model.Note;
  */
 public interface EditNoteListener {
 
-    public void onEdit(Note note);
+    public void onEdit(Note note, int notePosition);
     public void onDone(Note note);
     public void onBackPressedWhileEditing();
 }

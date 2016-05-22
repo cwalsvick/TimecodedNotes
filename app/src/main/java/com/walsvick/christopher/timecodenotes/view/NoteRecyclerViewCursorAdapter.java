@@ -37,7 +37,7 @@ public class NoteRecyclerViewCursorAdapter extends RecyclerView.Adapter<NoteRecy
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    listener.onEdit(listItemView.getNote());
+                    listener.onEdit(listItemView.getNote(), getPosition());
                     listItemView.editNote();
                 }
             });
@@ -100,6 +100,4 @@ public class NoteRecyclerViewCursorAdapter extends RecyclerView.Adapter<NoteRecy
         }
         return NoteDAO.cursorToNote(dataCursor);
     }
-
-
 }

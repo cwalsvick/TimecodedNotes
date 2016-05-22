@@ -114,7 +114,7 @@ public class NoteListItemView implements EditNoteListener {
     }
 
     @Override
-    public void onEdit(Note n) {
+    public void onEdit(Note n, int notePosition) {
 
     }
 

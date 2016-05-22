@@ -70,6 +70,7 @@ public class TakeNotesActivity extends ActionBarActivity implements
     private boolean mNewNoteActive;
     private boolean mEditNoteActive;
     private Note mNoteBeingEdited;
+    private int editNotePosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -349,7 +350,9 @@ public class TakeNotesActivity extends ActionBarActivity implements
     }
 
     @Override
-    public void onEdit(Note n) {
+    public void onEdit(Note n, int notePosition) {
+        editNotePosition = notePosition;
+
         mNoteBeingEdited = n;
         mEditNoteActive = true;
         invalidateOptionsMenu();
@@ -360,6 +363,8 @@ public class TakeNotesActivity extends ActionBarActivity implements
         editNote(note);
         fillData();
         invalidateOptionsMenu();
+
+        layoutManager.scrollToPosition(editNotePosition);
     }
 
     @Override
