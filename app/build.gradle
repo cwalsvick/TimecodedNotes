@@ -31,7 +31,8 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:21.0.+'
     compile fileTree(dir: 'libs', include: 'Parse-*.jar')
     compile files('libs/joda-time-2.6.jar')
-    compile files('libs/lombok.jar')
     compile files('libs/commons-lang3-3.3.2.jar')
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compileOnly 'org.projectlombok:lombok:1.16.18'
+    annotationProcessor 'org.projectlombok:lombok:1.16.18'
 }
